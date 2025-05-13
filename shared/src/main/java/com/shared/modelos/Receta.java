@@ -1,8 +1,5 @@
 package com.shared.modelos;
 
-import java.util.Date;
-import java.util.List;
-
 public class Receta {
     private Long id;
     // titulo o nombre de la receta

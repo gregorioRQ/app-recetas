@@ -2,32 +2,22 @@ package com.shared.modelos;
 
 import java.time.LocalDate;
 
-public class Usuario {
-    private Long id;
+public class RegisterDTO {
     private String nombre;
     private String apellido;
     private String correo;
     private LocalDate fechaNac;
     private String contrasena;
 
-    public Usuario() {
+    public RegisterDTO() {
     }
 
-    public Usuario(Long id, String nombre, String apellido, String correo, LocalDate fechaNac, String contrasena) {
-        this.id = id;
+    public RegisterDTO(String nombre, String apellido, String correo, LocalDate fechaNac, String contrasena) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.correo = correo;
         this.fechaNac = fechaNac;
         this.contrasena = contrasena;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getNombre() {
@@ -68,12 +58,6 @@ public class Usuario {
 
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
-    }
-
-    @Override
-    public String toString() {
-        return "Usuario [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", correo=" + correo
-                + ", fechaNac=" + fechaNac + ", contrasena=" + contrasena + "]";
     }
 
 }

@@ -33,6 +33,7 @@ public class UsuarioServicio {
                 .correo(usuarioEntity.getCorreo())
                 .contrasena(usuarioEntity.getContrasena())
                 .build();
+        usuarioRepositorio.save(usuarioSave);
         return usuarioSave;
     }
 

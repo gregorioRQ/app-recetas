@@ -1,5 +1,6 @@
 package com.backend.modelos;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class UsuarioEntity {
     private String correo;
 
     @Column(length = 20, nullable = false)
-    private Date fechaNac;
+    private LocalDate fechaNac;
 
     @Column(unique = true, length = 20, nullable = false)
     private String contrasena;
