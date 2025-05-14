@@ -54,6 +54,12 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         -->
+        <!-- Para generar tokens firmados -->
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>4.5.0</version>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -69,6 +75,13 @@
             <groupId>com.app-recetas</groupId>
             <artifactId>shared</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+    
+        <!--para cargar las variables de entorno desde un archivo .env-->
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 

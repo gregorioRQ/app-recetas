@@ -9,15 +9,50 @@ public class RegisterDTO {
     private LocalDate fechaNac;
     private String contrasena;
 
-    public RegisterDTO() {
+    // Constructor privado para el Builder
+    private RegisterDTO() {
     }
 
-    public RegisterDTO(String nombre, String apellido, String correo, LocalDate fechaNac, String contrasena) {
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.correo = correo;
-        this.fechaNac = fechaNac;
-        this.contrasena = contrasena;
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // Clase Builder estática
+    public static class Builder {
+        private RegisterDTO dto;
+
+        private Builder() {
+            dto = new RegisterDTO();
+        }
+
+        public Builder nombre(String nombre) {
+            dto.nombre = nombre;
+            return this;
+        }
+
+        public Builder apellido(String apellido) {
+            dto.apellido = apellido;
+            return this;
+        }
+
+        public Builder correo(String correo) {
+            dto.correo = correo;
+            return this;
+        }
+
+        public Builder fechaNac(LocalDate fechaNac) {
+            dto.fechaNac = fechaNac;
+            return this;
+        }
+
+        public Builder contrasena(String contrasena) {
+            dto.contrasena = contrasena;
+            return this;
+        }
+
+        public RegisterDTO build() {
+            return dto;
+        }
     }
 
     public String getNombre() {

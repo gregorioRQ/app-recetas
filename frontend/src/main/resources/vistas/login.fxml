@@ -5,7 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.geometry.Insets?>
 
@@ -13,38 +13,31 @@
             xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx/23.0.1"
             prefWidth="800" prefHeight="600">
-    <VBox maxHeight="-Infinity" 
-          maxWidth="-Infinity" 
-          minHeight="-Infinity" 
-          minWidth="-Infinity" 
-          prefHeight="400.0" 
-          prefWidth="600.0"
-          spacing="10">
+    <VBox alignment="CENTER" spacing="10" 
+          maxWidth="400" maxHeight="300"
+          AnchorPane.topAnchor="0.0"
+          AnchorPane.bottomAnchor="0.0"
+          AnchorPane.leftAnchor="0.0"
+          AnchorPane.rightAnchor="0.0">
         <padding>
             <Insets top="20" right="20" bottom="20" left="20"/>
         </padding>
-        <children>
-            <Label text="Nombre" />
-            <TextField fx:id="nombreField" />
-            
-            <Label text="Apellido" />
-            <TextField fx:id="apellidoField" />
-            
-            <Label text="Correo" />
-            <TextField fx:id="correoField" />
-            
-            <Label text="Contraseña" />
-            <PasswordField fx:id="passwordField" />
-            
-            <Label text="Fecha de Nacimiento" />
-            <DatePicker fx:id="fechaNacimientoField" />
-            
-            <Button fx:id="registerButton" 
-                    mnemonicParsing="false" 
-                    onAction="#handleRegisterButtonClick" 
-                    text="Registrarse"
-                    style="-fx-background-color: #4CAF50; -fx-text-fill: white;"
-                    prefWidth="150" />
-        </children>
+        
+        <Label text="Iniciar Sesión" style="-fx-font-size: 24px;"/>
+        
+        <Label text="Correo electrónico"/>
+        <TextField fx:id="correoField" promptText="Ingrese su correo"/>
+        
+        <Label text="Contraseña"/>
+        <PasswordField fx:id="passwordField" promptText="Ingrese su contraseña"/>
+        
+        <Button fx:id="loginButton" 
+                text="Iniciar Sesión"
+                onAction="#handleLoginButtonAction"
+                style="-fx-background-color: #4CAF50; -fx-text-fill: white;"
+                prefWidth="200"/>
+        
+         <Button fx:id="registerButton" text="Registrarse" onAction="#handleRegisterButtonClick" />
     </VBox>
 </AnchorPane>
+
