@@ -40,12 +40,27 @@
             <version>${project.parent.version}</version>
         </dependency>
 
+        <!-- para poder decodificar el token que viene del backend -->
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>4.4.0</version>
+        </dependency>
+
         <!-- soporte para serializar/deserializar tipos de fecha de java 8 (LocalDate) en Jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>2.15.0</version>
-            </dependency>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.38</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -13,7 +13,7 @@ public class FrontendApplication extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(FrontendApplication.class.getResource("/vistas/login.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600); // Dimensiones iniciales
-        stage.setTitle("Mi App de Recetas");
+        stage.setTitle("Recetas");
         stage.setScene(scene);
         stage.show();
     }

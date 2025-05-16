@@ -3,6 +3,7 @@ package com.frontend.controlador;
 import java.io.IOException;
 
 import com.frontend.servicio.AuthService;
+import com.frontend.servicio.InicioService;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -23,7 +24,7 @@ public class LoginController {
     private PasswordField passwordField;
 
     @FXML
-    private Button logiButton;
+    private Button loginButton;
 
     @FXML
     private Button registerButton;
@@ -37,14 +38,17 @@ public class LoginController {
 
         authService.login(correo, password).thenAccept(loginSuccessful -> {
             if (loginSuccessful) {
-                // ¡Login exitoso! Aquí deberías navegar a la siguiente pantalla
-                System.out.println("Navegando a la pantalla principal...");
-                // TODO: Implementar la navegación a la siguiente vista
+                // Asegurarse de que la carga de la pantalla se ejecute en el hilo de JavaFX
+                javafx.application.Platform.runLater(this::cargarPantallaInicio);
             } else {
-                mostrarAlerta("Error de login", "Nombre de usuario o contraseña incorrectos.");
+                // Mostrar alerta en el hilo de JavaFX
+                javafx.application.Platform
+                        .runLater(() -> mostrarAlerta("Error de login", "Nombre de usuario o contraseña incorrectos."));
             }
         }).exceptionally(error -> {
-            mostrarAlerta("Error de comunicación", "No se pudo comunicar con el servidor.");
+            // Mostrar alerta en el hilo de JavaFX
+            javafx.application.Platform
+                    .runLater(() -> mostrarAlerta("Error de comunicación", "No se pudo comunicar con el servidor."));
             error.printStackTrace();
             return null;
         });
@@ -65,6 +69,22 @@ public class LoginController {
             stage.show();
         } catch (IOException e) {
             mostrarAlerta("Error al cargar", "No se pudo cargar la pantalla de registro.");
+            e.printStackTrace();
+        }
+    }
+
+    private void cargarPantallaInicio() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/vistas/inicio.fxml"));
+            Parent root = loader.load();
+            InicioController inicioController = loader.getController();
+
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Recetas - Inicio");
+            stage.show();
+        } catch (IOException e) {
+            mostrarAlerta("Error al cargar", "No se pudo cargar la pantalla de inicio.");
             e.printStackTrace();
         }
     }

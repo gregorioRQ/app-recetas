@@ -30,16 +30,60 @@ public class Receta {
     public Receta() {
     }
 
-    public Receta(Long id, String nombre, String ingredientes, String instrucciones, Long creadorId,
-            String tiempoPreparacion, String tiempoCoccion, Integer porciones) {
-        this.id = id;
-        this.nombre = nombre;
-        this.ingredientes = ingredientes;
-        this.instrucciones = instrucciones;
-        this.creadorId = creadorId;
-        this.tiempoPreparacion = tiempoPreparacion;
-        this.tiempoCoccion = tiempoCoccion;
-        this.porciones = porciones;
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private Receta receta;
+
+        public Builder() {
+            receta = new Receta();
+        }
+
+        public Builder id(Long id) {
+            receta.id = id;
+            return this;
+        }
+
+        public Builder nombre(String nombre) {
+            receta.nombre = nombre;
+            return this;
+        }
+
+        public Builder ingredientes(String ingredientes) {
+            receta.ingredientes = ingredientes;
+            return this;
+        }
+
+        public Builder instrucciones(String instrucciones) {
+            receta.instrucciones = instrucciones;
+            return this;
+        }
+
+        public Builder creadorId(Long creadorId) {
+            receta.creadorId = creadorId;
+            return this;
+        }
+
+        public Builder tiempoPreparacion(String tiempoPreparacion) {
+            receta.tiempoPreparacion = tiempoPreparacion;
+            return this;
+        }
+
+        public Builder tiempoCoccion(String tiempoCoccion) {
+            receta.tiempoCoccion = tiempoCoccion;
+            return this;
+        }
+
+        public Builder porciones(Integer porciones) {
+            receta.porciones = porciones;
+            return this;
+        }
+
+        public Receta build() {
+            return receta;
+        }
     }
 
     public Long getId() {

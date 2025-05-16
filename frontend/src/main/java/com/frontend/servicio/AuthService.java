@@ -10,24 +10,20 @@ import java.util.concurrent.CompletableFuture;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.frontend.SessionManager;
 import com.shared.modelos.RegisterDTO;
 
 public class AuthService {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
     private final String backendBaseUrl = "http://localhost:8080/api/v1/auth";
-    private String authToken; // Para almacenar el token
 
     public AuthService() {
         this.httpClient = HttpClient.newHttpClient();
         this.objectMapper = new ObjectMapper();
         // módulo para manejar LocalDate
         this.objectMapper.registerModule(new JavaTimeModule());
-        this.authToken = null; // Inicialmente no hay token
-    }
 
-    public String getAuthToken() {
-        return authToken;
     }
 
     // SE DISPARA AL LOGUEARSE UN USUARIO
@@ -50,14 +46,21 @@ public class AuthService {
                     .thenApply(response -> {
                         if (response.statusCode() == 200) {
                             // Login exitoso, extraemos el token del cuerpo de la respuesta
-                            this.authToken = response.body();
-                            System.out.println("Login exitoso. Token recibido: " + this.authToken);
+                            String token = response.body();
+                            // guardar el token en el SessionManager
+                            SessionManager.getInstance().setAuthToken(token);
+                            System.out.println("Login exitoso. Token recibido: " + token);
+
+                            System.out.println("Token guardado en el SessionManager: "
+                                    + SessionManager.getInstance().getAuthToken());
                             return true;
                         } else {
                             // Login fallido, mostramos el error
                             System.err.println("Error en el login. Status Code: " + response.statusCode());
                             System.err.println("Body: " + response.body());
-                            this.authToken = null;
+
+                            // invalidar el token en caso de error
+                            SessionManager.getInstance().setAuthToken(null);
                             return false;
                         }
                     })
@@ -65,13 +68,14 @@ public class AuthService {
                     .exceptionally(e -> {
                         System.err.println("Error al comunicarse con el backend para el login: " + e.getMessage());
                         e.printStackTrace();
-                        this.authToken = null;
+                        // invalidar el token en caso de error
+                        SessionManager.getInstance().setAuthToken(null);
                         return false;
                     });
         } catch (IOException e) {
             System.err.println("Error al crear el cuerpo de la petición de login: " + e.getMessage());
             e.printStackTrace();
-            this.authToken = null;
+            SessionManager.getInstance().setAuthToken(null);
             return CompletableFuture.completedFuture(false);
         }
     }
@@ -114,7 +118,7 @@ public class AuthService {
 
     // Método para enviar solicitudes al backend que requieran autenticacion
     public CompletableFuture<HttpResponse<String>> enviarSolicitudAutenticada(String endpoint, String method) {
-        if (authToken == null) {
+        if (SessionManager.getInstance().getAuthToken() == null) {
             System.err.println("No hay token de autenticación disponible.");
             return CompletableFuture
                     .failedFuture(new IllegalStateException("No hay token de autenticación disponible."));
@@ -122,7 +126,7 @@ public class AuthService {
 
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(backendBaseUrl + endpoint))
-                .header("Authorization", "Bearer " + authToken);
+                .header("Authorization", "Bearer " + SessionManager.getInstance().getAuthToken());
 
         if ("POST".equalsIgnoreCase(method)) {
             requestBuilder.POST(HttpRequest.BodyPublishers.noBody()); // Ejemplo de POST sin cuerpo

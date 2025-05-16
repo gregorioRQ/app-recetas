@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.frontend.controlador.InicioController">
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+   <children>
+      <Label fx:id="saludoLabel" text="Hola, [Nombre de Usuario]">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Button text="Crear receta" onAction="#mostrarFormulario" />
+      <VBox fx:id="formularioReceta" spacing="10.0" visible="false" managed="false">
+         <children>
+            <Label text="Crear nueva receta">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <TextField fx:id="nombreRecetaField" promptText="Nombre de la receta" />
+            <TextField fx:id="ingredientesField" promptText="Ingredientes" />
+            <TextField fx:id="instruccionesField" promptText="Instrucciones" />
+            <Button text="Guardar receta" onAction="#guardarReceta" />
+         </children>
+      </VBox>
+   </children>
+</VBox>
