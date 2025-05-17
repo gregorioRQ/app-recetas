@@ -78,7 +78,6 @@ public class LoginController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/vistas/inicio.fxml"));
             Parent root = loader.load();
             InicioController inicioController = loader.getController();
-
             Stage stage = (Stage) loginButton.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Recetas - Inicio");

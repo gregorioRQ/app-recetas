@@ -1,0 +1,14 @@
+.card {
+  -fx-background-color: white;
+  -fx-border-radius: 8;
+  -fx-background-radius: 8;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0.3, 0, 2);
+  -fx-cursor: hand;
+  -fx-transition: all 0.3s ease;
+}
+
+.card:hover {
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0.4, 0, 4);
+  -fx-scale-x: 1.02;
+  -fx-scale-y: 1.02;
+}

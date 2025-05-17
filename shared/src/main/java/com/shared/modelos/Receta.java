@@ -1,5 +1,7 @@
 package com.shared.modelos;
 
+import java.time.LocalTime;
+
 public class Receta {
     private Long id;
     // titulo o nombre de la receta
@@ -8,8 +10,8 @@ public class Receta {
     private String instrucciones;
     // id del usuario que creo la receta
     private Long creadorId;
-    private String tiempoPreparacion;
-    private String tiempoCoccion;
+    private LocalTime tiempoPreparacion;
+    private LocalTime tiempoCoccion;
     private Integer porciones;
 
     /*
@@ -66,12 +68,12 @@ public class Receta {
             return this;
         }
 
-        public Builder tiempoPreparacion(String tiempoPreparacion) {
+        public Builder tiempoPreparacion(LocalTime tiempoPreparacion) {
             receta.tiempoPreparacion = tiempoPreparacion;
             return this;
         }
 
-        public Builder tiempoCoccion(String tiempoCoccion) {
+        public Builder tiempoCoccion(LocalTime tiempoCoccion) {
             receta.tiempoCoccion = tiempoCoccion;
             return this;
         }
@@ -126,19 +128,19 @@ public class Receta {
         this.creadorId = creadorId;
     }
 
-    public String getTiempoPreparacion() {
+    public LocalTime getTiempoPreparacion() {
         return tiempoPreparacion;
     }
 
-    public void setTiempoPreparacion(String tiempoPreparacion) {
+    public void setTiempoPreparacion(LocalTime tiempoPreparacion) {
         this.tiempoPreparacion = tiempoPreparacion;
     }
 
-    public String getTiempoCoccion() {
+    public LocalTime getTiempoCoccion() {
         return tiempoCoccion;
     }
 
-    public void setTiempoCoccion(String tiempoCoccion) {
+    public void setTiempoCoccion(LocalTime tiempoCoccion) {
         this.tiempoCoccion = tiempoCoccion;
     }
 
@@ -148,6 +150,13 @@ public class Receta {
 
     public void setPorciones(Integer porciones) {
         this.porciones = porciones;
+    }
+
+    @Override
+    public String toString() {
+        return "Receta [id=" + id + ", nombre=" + nombre + ", ingredientes=" + ingredientes + ", instrucciones="
+                + instrucciones + ", creadorId=" + creadorId + ", tiempoPreparacion=" + tiempoPreparacion
+                + ", tiempoCoccion=" + tiempoCoccion + ", porciones=" + porciones + "]";
     }
 
 }

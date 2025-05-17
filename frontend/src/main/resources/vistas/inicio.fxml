@@ -2,12 +2,15 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.frontend.controlador.InicioController">
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.frontend.controlador.InicioController"  prefWidth="800" prefHeight="600">
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
    </padding>
@@ -17,7 +20,12 @@
             <Font size="24.0" />
          </font>
       </Label>
-      <Button text="Crear receta" onAction="#mostrarFormulario" />
+      <Button fx:id="crearRecetaButton" text="Crear receta" onAction="#mostrarFormulario" />
+
+      <!-- Mostrar las recetas del usuario -->
+      <Button fx:id="misRecetasButton" text="Mis recetas" onAction="#mostrarRecetas" />
+
+      <!-- Formulario para crear la receta -->
       <VBox fx:id="formularioReceta" spacing="10.0" visible="false" managed="false">
          <children>
             <Label text="Crear nueva receta">
@@ -28,8 +36,31 @@
             <TextField fx:id="nombreRecetaField" promptText="Nombre de la receta" />
             <TextField fx:id="ingredientesField" promptText="Ingredientes" />
             <TextField fx:id="instruccionesField" promptText="Instrucciones" />
+            <HBox spacing="5.0">
+               <children>
+                  <Label text="Tiempo de preparación:" />
+                  <ComboBox fx:id="horasPreparacionComboBox" prefWidth="80.0" />
+                  <Label text="h" />
+                  <ComboBox fx:id="minutosPreparacionComboBox" prefWidth="80.0" />
+                  <Label text="m" />
+               </children>
+            </HBox>
+            <HBox spacing="5.0">
+               <children>
+                  <Label text="Tiempo de cocción:" />
+                  <ComboBox fx:id="horasCoccionComboBox" prefWidth="80.0" />
+                  <Label text="h" />
+                  <ComboBox fx:id="minutosCoccionComboBox" prefWidth="80.0" />
+                  <Label text="m" />
+               </children>
+            </HBox>
+            <TextField fx:id="porcionesField" promptText="Porciones" />
             <Button text="Guardar receta" onAction="#guardarReceta" />
          </children>
+
+         <Button text="Atrás" onAction="#volverAtras" style="-fx-background-color: #f44336; -fx-text-fill: white;" />
       </VBox>
+
+      
    </children>
 </VBox>

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.shared.modelos.Receta;
 import com.shared.modelos.Usuario;
 
@@ -19,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -46,6 +48,9 @@ public class UsuarioEntity {
 
     // Relación OneToMany bidireccional
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Excluir la relación para evitar recursión
+    @ToString.Exclude
+    @JsonManagedReference
     private List<RecetaEntity> recetas;
 
     // Método para agregar una receta
