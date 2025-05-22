@@ -53,4 +53,8 @@ public class RecetaService {
         }
         return recetaRepositorio.findByUsuarioId(userId);
     }
+
+    public void eliminarRecetaPorId(Long id) {
+        recetaRepositorio.deleteById(id);
+    }
 }

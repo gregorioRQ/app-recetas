@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,6 @@ import com.backend.repositorio.UsuarioRepositorio;
 import com.backend.servicio.UsuarioServicio;
 import com.shared.modelos.RegisterDTO;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -32,8 +32,10 @@ public class AuthController {
     @Autowired
     private final UsuarioRepositorio usuarioRepositorio;
 
-    // MAS ADELANTE GUARDAR LA KEY EN UNA VARIABLE DE ENTORNO
-    private static final String SECRET_KEY = Dotenv.load().get("SECRET_KEY");
+    // Inyecta la clave secreta desde la configuración (application.properties/yml o
+    // variables de entorno)
+    @Value("${app.jwt.secret}")
+    private String SECRET_KEY;
     // Tiempo de expiración del token (en milisegundos) - ejemplo: 1 hora
     private static final long EXPIRATION_TIME = 3_600_000;
 

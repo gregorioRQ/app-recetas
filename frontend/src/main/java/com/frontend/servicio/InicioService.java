@@ -74,4 +74,15 @@ public class InicioService {
         }
     }
 
+    public CompletableFuture<HttpResponse<String>> eliminarRecetaPorId(Long id) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(backendBaseUrl + "/receta" + id))
+                .header("Authorization", "Bearer " + SessionManager.getInstance().getAuthToken())
+                .header("Content-Type", "application/json")
+                .DELETE()
+                .build();
+        return HttpClient.newHttpClient().sendAsync(request, HttpResponse.
+        // convierte el cuerpo de la respuesta "body" en un objeto de tipo String
+                BodyHandlers.ofString());
+    }
 }

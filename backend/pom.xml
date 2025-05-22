@@ -77,12 +77,6 @@
             <version>${project.parent.version}</version>
         </dependency>
     
-        <!--para cargar las variables de entorno desde un archivo .env-->
-        <dependency>
-            <groupId>io.github.cdimascio</groupId>
-            <artifactId>dotenv-java</artifactId>
-            <version>3.0.0</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -97,7 +91,16 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                        <mainClass>com.backend.BackendApplication
+</mainClass>
                 </configuration>
+                <executions>
+                <execution>
+                    <goals>
+                        <goal>repackage</goal>
+                    </goals>
+                </execution>
+            </executions>
             </plugin>
         </plugins>
     </build>
