@@ -1,17 +1,21 @@
 package com.backend.controlador;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.service.annotation.PatchExchange;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -74,22 +78,64 @@ public class RecetaController {
     }
 
     @DeleteMapping("/receta/{id}")
-    public ResponseEntity<?> eliminarRecetaPorId(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<?> eliminarRecetaPorId(@PathVariable("id") Long id, HttpServletRequest request) {
         try {
             // Obtener el token del encabezado Authorization
             String authHeader = request.getHeader("Authorization");
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-
-            String idRecetaString = request.getHeader("idReceta");
-            Long idReceta = Long.parseLong(idRecetaString);
-
-            recetaService.eliminarRecetaPorId(idReceta);
+            recetaService.eliminarRecetaPorId(id);
             return new ResponseEntity<>("Receta eliminada", HttpStatus.OK);
         } catch (Exception e) {
             System.err.println("No se pudo eliminar: " + e.getMessage());
-            return new ResponseEntity<>("No se pudo eliminar" + e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("No se pudo eliminar: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PutMapping("/receta/{id}")
+    public ResponseEntity<?> editarReceta(@PathVariable("id") Long id,
+            @RequestBody Receta receta,
+            HttpServletRequest request) {
+        try {
+            // Validar autenticación
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return new ResponseEntity<>("No autorizado", HttpStatus.UNAUTHORIZED);
+            }
+
+            // Actualizar la receta
+            RecetaEntity recetaActualizada = recetaService.actualizarReceta(id, receta);
+            return new ResponseEntity<>(recetaActualizada, HttpStatus.OK);
+
+        } catch (EntityNotFoundException e) {
+            System.err.println("Error: " + e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            System.err.println("Error al actualizar la receta: " + e.getMessage());
+            return new ResponseEntity<>("Error al actualizar la receta",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PatchMapping("/receta/{id}")
+    public ResponseEntity<?> editarRecetaParcial(@PathVariable("id") Long id, @RequestBody Map<String, Object> cambios,
+            HttpServletRequest request) {
+        try {
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return new ResponseEntity<>("No autorizado", HttpStatus.UNAUTHORIZED);
+            }
+
+            RecetaEntity recetaActualizada = recetaService.actualizarRecetaParcial(id, cambios);
+            return new ResponseEntity<>(recetaActualizada, HttpStatus.OK);
+        } catch (EntityNotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
