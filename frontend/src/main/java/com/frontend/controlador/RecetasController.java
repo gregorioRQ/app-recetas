@@ -58,8 +58,11 @@ public class RecetasController {
         cargarRecetas();
     }
 
-    private void cargarRecetas() {
+    public void cargarRecetas() {
         try {
+            // Limpiar el grid antes de cargar nuevas recetas
+            recetasGrid.getChildren().clear();
+
             // Llamar al servicio para obtener las recetas del usuario
             List<Receta> recetas = inicioService.obtenerRecetasDelUsuario();
 
@@ -90,6 +93,10 @@ public class RecetasController {
         }
     }
 
+    /*
+     * crea cada previsualizacion de la receta añadiendo algunos datos
+     * y metodos
+     */
     private VBox crearTarjetaReceta(Receta receta) {
         VBox tarjeta = new VBox();
         tarjeta.setSpacing(10);
@@ -97,7 +104,7 @@ public class RecetasController {
         tarjeta.setStyle(
                 "-fx-border-color: #ccc; -fx-border-radius: 5; -fx-padding: 10; -fx-background-color: #f9f9f9; -fx-background-radius: 5;");
         tarjeta.setOnMouseClicked(event -> {
-            mostrarDetallesReceta(receta.getNombre(), receta.getIngredientes(), receta.getInstrucciones());
+            mostrarDetallesReceta(receta);
         });
 
         Label nombreLabel = new Label(receta.getNombre());
@@ -145,6 +152,10 @@ public class RecetasController {
                         if (response.statusCode() == 200) {
                             mostrarAviso("Éxito", "Receta eliminada.");
                             volverALista(); // Volver a la lista después de eliminar
+                            // Limpiar el GridPane
+                            recetasGrid.getChildren().clear();
+                            // Recarga las recetas
+                            cargarRecetas();
                         } else {
                             mostrarAlerta("Error", "No se pudo eliminar la receta. Por favor, inténtalo de nuevo.");
                         }
@@ -163,18 +174,16 @@ public class RecetasController {
         }
     }
 
-    // Método para mostrar los detalles de una receta seleccionada
-    public void mostrarDetallesReceta(String nombre, String ingredientes, String instrucciones) {
+    // Renderiza los detalles completos de la receta cuando el usuario
+    // hace clic en la receta previsualizada
+    public void mostrarDetallesReceta(Receta receta) {
         // Cargar los datos de la receta en los labels
-        nombreRecetaLabel.setText("Nombre: " + nombre);
-        ingredientesRecetaLabel.setText("Ingredientes: " + ingredientes);
-        instruccionesRecetaLabel.setText("Instrucciones: " + instrucciones);
+        nombreRecetaLabel.setText("Nombre: " + receta.getNombre());
+        ingredientesRecetaLabel.setText("Ingredientes: " + receta.getIngredientes());
+        instruccionesRecetaLabel.setText("Instrucciones: " + receta.getInstrucciones());
 
         // Guardar la receta seleccionada
-        recetaSeleccionada = new Receta();
-        recetaSeleccionada.setNombre(nombre);
-        recetaSeleccionada.setIngredientes(ingredientes);
-        recetaSeleccionada.setInstrucciones(instrucciones);
+        recetaSeleccionada = receta;
 
         // Animación para mostrar los detalles
         TranslateTransition transition = new TranslateTransition(Duration.millis(300), listaRecetasPane);
@@ -191,6 +200,9 @@ public class RecetasController {
     // Método para volver a la lista de recetas con animación inversa
     @FXML
     private void volverALista() {
+        // Limpiar la receta seleccionada
+        recetaSeleccionada = null;
+
         // Animación para ocultar los detalles y volver a la lista
         TranslateTransition transitionDetalles = new TranslateTransition(Duration.millis(300), detallesRecetaPane);
         transitionDetalles.setToX(800); // Mover los detalles fuera de la vista

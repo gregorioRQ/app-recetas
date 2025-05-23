@@ -76,7 +76,7 @@ public class InicioService {
 
     public CompletableFuture<HttpResponse<String>> eliminarRecetaPorId(Long id) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(backendBaseUrl + "/receta" + id))
+                .uri(URI.create(backendBaseUrl + "/receta/" + id))
                 .header("Authorization", "Bearer " + SessionManager.getInstance().getAuthToken())
                 .header("Content-Type", "application/json")
                 .DELETE()
