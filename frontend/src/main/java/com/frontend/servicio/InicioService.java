@@ -85,4 +85,21 @@ public class InicioService {
         // convierte el cuerpo de la respuesta "body" en un objeto de tipo String
                 BodyHandlers.ofString());
     }
+
+    public CompletableFuture<HttpResponse<String>> actualizarReceta(Receta receta) {
+        try {
+            String requestBody = objectMapper.writeValueAsString(receta);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(backendBaseUrl + "/receta/" + receta.getId()))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + SessionManager.getInstance().getAuthToken())
+                    .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
+
+            return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
 }

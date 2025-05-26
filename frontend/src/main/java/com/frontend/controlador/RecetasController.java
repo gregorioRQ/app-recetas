@@ -58,8 +58,26 @@ public class RecetasController {
         cargarRecetas();
     }
 
+    /*
+     * actualiza los detalles de la receta "receta detallada" despues
+     * de editar alguno de sus campos.
+     */
+    public void actualizarDetallesReceta(Receta receta) {
+        Platform.runLater(() -> {
+            nombreRecetaLabel.setText("Nombre: " + receta.getNombre());
+            ingredientesRecetaLabel.setText("Ingredientes: " + receta.getIngredientes());
+            instruccionesRecetaLabel.setText("Instrucciones: " + receta.getInstrucciones());
+            // Actualizar la receta seleccionada con los nuevos datos
+            recetaSeleccionada = receta;
+        });
+    }
+
     public void cargarRecetas() {
         try {
+
+            // Guardar el ID de la receta seleccionada actualmente (si existe)
+            Long recetaSeleccionadaId = recetaSeleccionada != null ? recetaSeleccionada.getId() : null;
+
             // Limpiar el grid antes de cargar nuevas recetas
             recetasGrid.getChildren().clear();
 
@@ -72,6 +90,11 @@ public class RecetasController {
             for (Receta receta : recetas) {
                 VBox tarjeta = crearTarjetaReceta(receta);
                 recetasGrid.add(tarjeta, col, row);
+
+                // Si esta es la receta que estaba seleccionada, actualizar sus detalles
+                if (recetaSeleccionadaId != null && receta.getId().equals(recetaSeleccionadaId)) {
+                    actualizarDetallesReceta(receta);
+                }
 
                 col++;
                 if (col == 3) { // Máximo 3 tarjetas por fila
@@ -94,7 +117,7 @@ public class RecetasController {
     }
 
     /*
-     * crea cada previsualizacion de la receta añadiendo algunos datos
+     * crea una previsualizacion para cada receta añadiendo algunos datos
      * y metodos
      */
     private VBox crearTarjetaReceta(Receta receta) {
@@ -110,13 +133,12 @@ public class RecetasController {
         Label nombreLabel = new Label(receta.getNombre());
         nombreLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-        Label ingredientesLabel = new Label("Ingredientes: " + receta.getIngredientes());
-        ingredientesLabel.setWrapText(true);
+        /*
+         * SE AÑADIRA UNA IMAGEN DE PRESENTACION PARA LA PREVISUALIZACION
+         * DE LA RECETA MAS ADELANTE
+         */
 
-        Label tiempoLabel = new Label(
-                "Tiempo: " + receta.getTiempoPreparacion() + " preparación, " + receta.getTiempoCoccion() + " cocción");
-
-        tarjeta.getChildren().addAll(nombreLabel, ingredientesLabel, tiempoLabel);
+        tarjeta.getChildren().addAll(nombreLabel);
         return tarjeta;
     }
 
@@ -170,6 +192,31 @@ public class RecetasController {
             } catch (Exception e) {
                 System.err.println("Error al eliminar la receta: " + e.getMessage());
                 mostrarAlerta("Error", "No se pudo eliminar la receta. Por favor, inténtalo de nuevo.");
+            }
+        }
+    }
+
+    /*
+     * abre la vista editar-receta y envia los datos (receta y una instancia
+     * del controlador)
+     */
+    @FXML
+    private void editarReceta() {
+        if (recetaSeleccionada != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/vistas/editar-receta.fxml"));
+                Parent root = loader.load();
+
+                EditarRecetaController editarController = loader.getController();
+                editarController.setReceta(recetaSeleccionada, this);
+
+                Stage stage = new Stage();
+                stage.setTitle("Editar Receta");
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                mostrarAlerta("Error", "No se pudo abrir el formulario de edición");
+                e.printStackTrace();
             }
         }
     }
