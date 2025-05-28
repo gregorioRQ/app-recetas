@@ -55,6 +55,13 @@
                </children>
             </HBox>
             <TextField fx:id="porcionesField" promptText="Porciones" />
+
+            <!-- componente para guardar la imagen -->
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+               <Label text="Imagen del platillo:" />
+               <TextField fx:id="imagenPathField" prefWidth="200" editable="false" promptText="Ninguna imagen seleccionada"/>
+               <Button text="Seleccionar imagen" onAction="#seleccionarImagen" />
+            </HBox>
             <Button text="Guardar receta" onAction="#guardarReceta" />
          </children>
 

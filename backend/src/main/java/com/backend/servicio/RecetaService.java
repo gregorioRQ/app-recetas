@@ -1,12 +1,20 @@
 package com.backend.servicio;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.modelos.RecetaEntity;
 import com.backend.modelos.UsuarioEntity;
@@ -24,12 +32,24 @@ public class RecetaService {
     @Autowired
     private RecetaRepositorio recetaRepositorio;
 
-    public void guardarReceta(Receta receta) {
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5mb
+    private static final List<String> ALLOWED_FORMATS = Arrays.asList("image/jpg", "image/jpeg", "image/png");
+
+    @Value("${app.upload.dir:${user.home}}")
+    private String uploadDir;
+
+    public void guardarReceta(Receta receta, MultipartFile imagen) {
         Optional<UsuarioEntity> usuarioOp = usuarioRepositorio.findById(receta.getCreadorId());
 
         UsuarioEntity usuario = usuarioOp.get();
         if (usuario == null) {
             throw new EntityNotFoundException("Usuario no encontrado");
+        }
+
+        if (imagen != null && !imagen.isEmpty()) {
+            validarImagen(imagen);
+            String rutaImagen = guardarImagen(imagen);
+            receta.setPathImg(rutaImagen);
         }
 
         RecetaEntity recetaGuardar = new RecetaEntity();
@@ -39,11 +59,50 @@ public class RecetaService {
         recetaGuardar.setTiempoPreparacion(receta.getTiempoPreparacion());
         recetaGuardar.setTiempoCoccion(receta.getTiempoCoccion());
         recetaGuardar.setPorciones(receta.getPorciones());
+        recetaGuardar.setPathImg(receta.getPathImg());
         recetaGuardar.setUsuario(usuario);
 
         recetaRepositorio.save(recetaGuardar);
-        System.out.println(recetaGuardar.toString());
 
+    }
+
+    // metodo aux para validar la imagen
+    private void validarImagen(MultipartFile imagen) {
+        // validar tamaño
+        if (imagen.getSize() > MAX_FILE_SIZE) {
+            throw new IllegalArgumentException("El tamaño del archivo exice el límite de 5MB");
+        }
+
+        // validar formato
+        String contentType = imagen.getContentType();
+        if (!ALLOWED_FORMATS.contains(contentType)) {
+            throw new IllegalArgumentException("Formato de imagen no aceptado use en cambio: JPG, JPEG, PNG");
+        }
+    }
+
+    // guarda la imagen en el sistema de archivos del servidor
+    private String guardarImagen(MultipartFile imagen) {
+
+        try {
+            // nombre unico para el archivo
+            String nombreArchivo = UUID.randomUUID().toString() + "_" + imagen.getOriginalFilename();
+
+            // construir la ruta absoluta donde se guardarán las imágenes
+            Path directorioImagenes = Paths.get(uploadDir, "recetas-imagenes");
+
+            // Crear directorio si no existe
+            if (!Files.exists(directorioImagenes)) {
+                Files.createDirectories(directorioImagenes);
+            }
+
+            // Guardar imagen
+            Path rutaCompleta = directorioImagenes.resolve(nombreArchivo);
+            Files.copy(imagen.getInputStream(), rutaCompleta);
+
+            return rutaCompleta.toString();
+        } catch (IOException e) {
+            throw new RuntimeException("Error al guardar la imagen: " + e.getMessage());
+        }
     }
 
     public List<RecetaEntity> todasLasRecetasPorUsuarioId(Long userId) {

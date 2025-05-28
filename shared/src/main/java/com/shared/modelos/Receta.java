@@ -13,6 +13,7 @@ public class Receta {
     private LocalTime tiempoPreparacion;
     private LocalTime tiempoCoccion;
     private Integer porciones;
+    private String pathImg;
 
     /*
      * // Categoría de la receta (ej: "Desayuno", "Almuerzo", "Cena", "Postre",
@@ -80,6 +81,11 @@ public class Receta {
 
         public Builder porciones(Integer porciones) {
             receta.porciones = porciones;
+            return this;
+        }
+
+        public Builder pathImg(String pathImg) {
+            receta.pathImg = pathImg;
             return this;
         }
 
@@ -152,11 +158,19 @@ public class Receta {
         this.porciones = porciones;
     }
 
+    public String getPathImg() {
+        return pathImg;
+    }
+
+    public void setPathImg(String pathImg) {
+        this.pathImg = pathImg;
+    }
+
     @Override
     public String toString() {
         return "Receta [id=" + id + ", nombre=" + nombre + ", ingredientes=" + ingredientes + ", instrucciones="
                 + instrucciones + ", creadorId=" + creadorId + ", tiempoPreparacion=" + tiempoPreparacion
-                + ", tiempoCoccion=" + tiempoCoccion + ", porciones=" + porciones + "]";
+                + ", tiempoCoccion=" + tiempoCoccion + ", porciones=" + porciones + ", pathImg=" + pathImg + "]";
     }
 
 }

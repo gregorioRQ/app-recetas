@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,13 +15,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.service.annotation.PatchExchange;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.backend.modelos.RecetaEntity;
 import com.backend.servicio.RecetaService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.shared.modelos.Receta;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -32,11 +37,24 @@ public class RecetaController {
     @Autowired
     private RecetaService recetaService;
 
-    @PostMapping("/receta")
-    public ResponseEntity<String> crearReceta(@RequestBody Receta receta) {
+    /*
+     * @RequestPart para el manejo de las partes de la solicitud
+     * multipart/form-data.
+     */
+    @PostMapping(value = "/receta", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> crearReceta(
+            @RequestPart("receta") String recetaJson,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
         try {
-            recetaService.guardarReceta(receta);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            Receta receta = mapper.readValue(recetaJson, Receta.class);
+
+            recetaService.guardarReceta(receta, imagen);
             return new ResponseEntity<>("Receta creada con éxito.", HttpStatus.CREATED);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+
         } catch (Exception e) {
             return new ResponseEntity<>("Error al crear la receta: " + e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);

@@ -19,8 +19,10 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalTime;
 
@@ -67,6 +69,11 @@ public class InicioController {
 
     @FXML
     private TextField porcionesField;
+
+    @FXML
+    private TextField imagenPathField;
+
+    private File imagenSeleccionada;
 
     @FXML
     private ComboBox<Integer> horasPreparacionComboBox;
@@ -128,6 +135,25 @@ public class InicioController {
     }
 
     @FXML
+    private void seleccionarImagen() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleccionar Imagen");
+
+        // Configurar filtros para archivos de imagen
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Archivos de imagen", "*.png", "*.jpg",
+                "*.jpeg");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        // Mostrar el diálogo de selección de archivo
+        File file = fileChooser.showOpenDialog(imagenPathField.getScene().getWindow());
+
+        if (file != null) {
+            imagenSeleccionada = file;
+            imagenPathField.setText(file.getName());
+        }
+    }
+
+    @FXML
     private void guardarReceta() {
         try {
             // Obtener datos del formulario
@@ -180,10 +206,11 @@ public class InicioController {
                     .build();
 
             if (creadorId != null) {
-                inicioService.enviarRecetaAlBackend(recetaGuardar).thenAccept(response -> {
+                inicioService.enviarRecetaAlBackend(recetaGuardar, imagenSeleccionada).thenAccept(response -> {
                     Platform.runLater(() -> {
                         if (response.statusCode() == 201) {
                             mostrarAlerta("Éxito", "La receta se ha creado con éxito.");
+                            limpiarFormulario();
                         } else {
                             // Mostrar el error del backend en la consola
                             System.err.println("Error del backend: " + response.body());
@@ -199,28 +226,32 @@ public class InicioController {
                     return null;
                 });
             }
-
-            // Limpiar campos y ocultar formulario
-            nombreRecetaField.clear();
-            ingredientesField.clear();
-            instruccionesField.clear();
-            horasPreparacionComboBox.setValue(0);
-            minutosPreparacionComboBox.setValue(0);
-            horasCoccionComboBox.setValue(0);
-            minutosCoccionComboBox.setValue(0);
-            porcionesField.clear();
-
-            // Ocultar el formulario y volver a mostrar los botones.
-            formularioReceta.setVisible(false);
-            formularioReceta.setManaged(false);
-            crearRecetaButton.setVisible(true);
-            crearRecetaButton.setManaged(true);
-            misRecetasButton.setVisible(true);
-            misRecetasButton.setManaged(true);
         } catch (Exception e) {
             System.err.println("Error al guardar la receta: " + e.getMessage());
             mostrarAlerta("Error", "Por favor, verifica los datos ingresados.");
         }
+    }
+
+    private void limpiarFormulario() {
+        // Limpiar campos y ocultar formulario
+        nombreRecetaField.clear();
+        ingredientesField.clear();
+        instruccionesField.clear();
+        horasPreparacionComboBox.setValue(0);
+        minutosPreparacionComboBox.setValue(0);
+        horasCoccionComboBox.setValue(0);
+        minutosCoccionComboBox.setValue(0);
+        porcionesField.clear();
+        imagenPathField.clear();
+        imagenSeleccionada = null;
+
+        // Ocultar el formulario y volver a mostrar los botones.
+        formularioReceta.setVisible(false);
+        formularioReceta.setManaged(false);
+        crearRecetaButton.setVisible(true);
+        crearRecetaButton.setManaged(true);
+        misRecetasButton.setVisible(true);
+        misRecetasButton.setManaged(true);
     }
 
     private void mostrarAlerta(String titulo, String mensaje) {

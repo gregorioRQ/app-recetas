@@ -49,4 +49,6 @@ public class RecetaEntity {
     @ToString.Exclude
     @JsonBackReference
     private UsuarioEntity usuario;
+
+    private String pathImg;
 }
