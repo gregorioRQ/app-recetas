@@ -1,7 +1,9 @@
 package com.frontend.controlador;
 
+import java.io.File;
 import java.time.LocalTime;
 
+import com.frontend.AppConfig;
 import com.frontend.servicio.InicioService;
 import com.shared.modelos.Receta;
 
@@ -11,6 +13,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /*
@@ -33,6 +38,9 @@ public class EditarRecetaController {
     private ComboBox<Integer> minutosCoccionComboBox;
     @FXML
     private TextField porcionesField;
+    @FXML
+    private ImageView imagenPreview;
+    private File nuevaImagenFile;
 
     private Receta recetaOriginal;
     private final InicioService inicioService = new InicioService();
@@ -48,6 +56,27 @@ public class EditarRecetaController {
         for (int i = 0; i < 60; i++) {
             minutosPreparacionComboBox.getItems().add(i);
             minutosCoccionComboBox.getItems().add(i);
+        }
+    }
+
+    // genera un selector de archivos
+    @FXML
+    private void seleccionarImagen() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleccionar imagen");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg"));
+
+        File selectedFile = fileChooser.showOpenDialog(nombreField.getScene().getWindow());
+        // muestra una previsualización de la imagen seleccionada
+        if (selectedFile != null) {
+            try {
+                Image imagen = new Image(selectedFile.toURI().toString());
+                imagenPreview.setImage(imagen);
+                nuevaImagenFile = selectedFile;
+            } catch (Exception e) {
+                mostrarAlerta("Error", "No se pudo cargar la imagen seleccionada");
+            }
         }
     }
 
@@ -67,6 +96,12 @@ public class EditarRecetaController {
         minutosCoccionComboBox.setValue(receta.getTiempoCoccion().getMinute());
 
         porcionesField.setText(String.valueOf(receta.getPorciones()));
+
+        // Cargar imagen actual si existe
+        if (receta.getPathImg() != null && !receta.getPathImg().isEmpty()) {
+            String imageUrl = AppConfig.getBackendBaseUrl() + receta.getPathImg();
+            imagenPreview.setImage(new Image(imageUrl));
+        }
     }
 
     @FXML
@@ -87,7 +122,7 @@ public class EditarRecetaController {
                     .creadorId(recetaOriginal.getCreadorId())
                     .build();
 
-            inicioService.actualizarReceta(recetaEditada).thenAccept(response -> {
+            inicioService.actualizarReceta(recetaEditada, nuevaImagenFile).thenAccept(response -> {
                 Platform.runLater(() -> {
                     if (response.statusCode() == 200) {
                         mostrarAviso("Éxito", "Receta actualizada correctamente");

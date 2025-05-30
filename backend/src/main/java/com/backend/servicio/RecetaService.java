@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.modelos.RecetaEntity;
@@ -38,6 +40,7 @@ public class RecetaService {
     @Value("${app.upload.dir:${user.home}}")
     private String uploadDir;
 
+    @Transactional
     public void guardarReceta(Receta receta, MultipartFile imagen) {
         Optional<UsuarioEntity> usuarioOp = usuarioRepositorio.findById(receta.getCreadorId());
 
@@ -67,6 +70,7 @@ public class RecetaService {
     }
 
     // metodo aux para validar la imagen
+    // determina su tamaño y tipo de formato
     private void validarImagen(MultipartFile imagen) {
         // validar tamaño
         if (imagen.getSize() > MAX_FILE_SIZE) {
@@ -81,11 +85,16 @@ public class RecetaService {
     }
 
     // guarda la imagen en el sistema de archivos del servidor
+    // y retorna la ruta relavita
+    // proporciona a la imagen un nombre unico sanitiza el nombre
     private String guardarImagen(MultipartFile imagen) {
-
         try {
-            // nombre unico para el archivo
-            String nombreArchivo = UUID.randomUUID().toString() + "_" + imagen.getOriginalFilename();
+            // Sanitizar el nombre del archivo original
+            String nombreOriginal = imagen.getOriginalFilename();
+            String nombreSanitizado = nombreOriginal.replaceAll("\\s+", "-");
+
+            // Crear nombre único para el archivo
+            String nombreArchivo = UUID.randomUUID().toString() + "_" + nombreSanitizado;
 
             // construir la ruta absoluta donde se guardarán las imágenes
             Path directorioImagenes = Paths.get(uploadDir, "recetas-imagenes");
@@ -97,14 +106,16 @@ public class RecetaService {
 
             // Guardar imagen
             Path rutaCompleta = directorioImagenes.resolve(nombreArchivo);
-            Files.copy(imagen.getInputStream(), rutaCompleta);
+            Files.copy(imagen.getInputStream(), rutaCompleta, StandardCopyOption.REPLACE_EXISTING);
 
-            return rutaCompleta.toString();
+            // retorna la ruta relativa
+            return "/images/" + nombreArchivo;
         } catch (IOException e) {
             throw new RuntimeException("Error al guardar la imagen: " + e.getMessage());
         }
     }
 
+    @Transactional
     public List<RecetaEntity> todasLasRecetasPorUsuarioId(Long userId) {
 
         Optional<UsuarioEntity> usuarioOp = usuarioRepositorio.findById(userId);
@@ -115,17 +126,48 @@ public class RecetaService {
         return recetaRepositorio.findByUsuarioId(userId);
     }
 
+    @Transactional
     public void eliminarRecetaPorId(Long id) {
         RecetaEntity recetaEliminar = recetaRepositorio.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No se encontro la receta con ID: " + id));
-
+        // eliminar la imagen
+        String pathImagen = recetaEliminar.getPathImg();
+        if (pathImagen != null && !pathImagen.isEmpty()) {
+            try {
+                // extraer solo el nombre del archivo de la ruta relativa
+                String nombreArchivo = pathImagen.substring(pathImagen.lastIndexOf("/") + 1);
+                // construir la ruta completa
+                Path rutaImagen = Paths.get(uploadDir, "recetas-imagenes", nombreArchivo);
+                Files.deleteIfExists(rutaImagen);
+            } catch (IOException ex) {
+                System.err.println("Error al eliminar la imagen: " + ex.getMessage());
+            }
+        }
         recetaRepositorio.deleteById(recetaEliminar.getId());
     }
 
-    public RecetaEntity actualizarReceta(Long id, Receta recetaActualizada) {
+    @Transactional
+    public RecetaEntity actualizarReceta(Long id, Receta recetaActualizada, MultipartFile nuevaImagen) {
         // Buscar la receta existente
         RecetaEntity recetaExistente = recetaRepositorio.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No se encontró la receta con ID: " + id));
+        try {
+            String pathImagen = recetaExistente.getPathImg();
+            // extraer solo el nombre del archivo de la ruta relativa
+            String nombreArchivo = pathImagen.substring(pathImagen.lastIndexOf("/") + 1);
+            // construir la ruta completa
+            Path rutaImagen = Paths.get(uploadDir, "recetas-imagenes", nombreArchivo);
+            Files.deleteIfExists(rutaImagen);
+        } catch (IOException ex) {
+            System.err.println("Error al intentar eliminar la imagen anterior: " + ex.getMessage());
+        }
+
+        // Actualizar la imagen solo si se proporciona una nueva
+        if (nuevaImagen != null && !nuevaImagen.isEmpty()) {
+            validarImagen(nuevaImagen);
+            String nuevaRutaImagen = guardarImagen(nuevaImagen);
+            recetaExistente.setPathImg(nuevaRutaImagen);
+        }
 
         // Actualizar los campos
         recetaExistente.setNombre(recetaActualizada.getNombre());
@@ -139,6 +181,7 @@ public class RecetaService {
         return recetaRepositorio.save(recetaExistente);
     }
 
+    @Transactional
     public RecetaEntity actualizarRecetaParcial(Long id, Map<String, Object> cambios) {
         RecetaEntity receta = recetaRepositorio.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No se encontro la receta con el ID: " + id));

@@ -1,5 +1,6 @@
 package com.frontend.controlador;
 
+import com.frontend.AppConfig;
 import com.frontend.SessionManager;
 import com.frontend.servicio.InicioService;
 import com.shared.modelos.Receta;
@@ -12,11 +13,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import lombok.Value;
 
 import java.io.IOException;
 import java.util.List;
@@ -59,8 +64,8 @@ public class RecetasController {
     }
 
     /*
-     * actualiza los detalles de la receta "receta detallada" despues
-     * de editar alguno de sus campos.
+     * actualiza la vista que muestra la receta con todos sus detalles cuando
+     * el usuario edita alguno de sus campos.
      */
     public void actualizarDetallesReceta(Receta receta) {
         Platform.runLater(() -> {
@@ -130,15 +135,62 @@ public class RecetasController {
             mostrarDetallesReceta(receta);
         });
 
+        // crear y ajusta un ImagenView para la imagen de la receta
+        ImageView imagenView = new ImageView();
+        imagenView.setFitWidth(200);
+        imagenView.setFitHeight(150);
+        imagenView.setPreserveRatio(true);
+
+        // carga la imagen si existe la ruta
+        if (receta.getPathImg() != null && !receta.getPathImg().isEmpty()) {
+            try {
+                String baseUrl = AppConfig.getBackendBaseUrl();
+                String imagePath = receta.getPathImg();
+
+                // Asegurarse de que el path comience con /
+                if (!imagePath.startsWith("/")) {
+                    imagePath = "/" + imagePath;
+                }
+
+                String imagenUrl = baseUrl + imagePath;
+
+                System.out.println("URL de imagen codificada: " + imagenUrl);
+
+                Image imagen = new Image(imagenUrl, true);
+                imagenView.setImage(imagen);
+
+                // Manejar errores de carga
+                imagen.errorProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue) {
+                        System.err.println("Error cargando imagen: " + imagen.getException());
+                        Platform.runLater(() -> cargarImagenPorDefecto(imagenView));
+                    }
+                });
+
+                // Manejar carga exitosa
+                imagen.progressProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue.doubleValue() == 1.0) {
+                        System.out.println("Imagen cargada exitosamente: " + imagenUrl);
+                    }
+                });
+
+                imagenView.setImage(imagen);
+
+            } catch (Exception e) {
+                System.err.println("No se pudo cargar la imagen: " + e.getMessage());
+                cargarImagenPorDefecto(imagenView);
+            }
+        } else {
+            cargarImagenPorDefecto(imagenView);
+        }
+
         Label nombreLabel = new Label(receta.getNombre());
         nombreLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-        /*
-         * SE AÑADIRA UNA IMAGEN DE PRESENTACION PARA LA PREVISUALIZACION
-         * DE LA RECETA MAS ADELANTE
-         */
+        tarjeta.getChildren().addAll(imagenView, nombreLabel);
 
-        tarjeta.getChildren().addAll(nombreLabel);
+        // Configurar el crecimiento vertical
+        VBox.setVgrow(imagenView, Priority.ALWAYS);
         return tarjeta;
     }
 
@@ -273,5 +325,14 @@ public class RecetasController {
         alert.setHeaderText("la eliminacion");
         alert.setContentText(mensaje);
         alert.showAndWait();
+    }
+
+    private void cargarImagenPorDefecto(ImageView imageView) {
+        try {
+            Image defaultImage = new Image(getClass().getResourceAsStream("/resources/imagenes/no-imagen.png"));
+            imageView.setImage(defaultImage);
+        } catch (Exception e) {
+            System.err.println("No se pudo cargar la imagen por defecto: " + e.getMessage());
+        }
     }
 }

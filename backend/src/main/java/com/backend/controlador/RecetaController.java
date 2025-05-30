@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.service.annotation.PatchExchange;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -44,8 +43,15 @@ public class RecetaController {
     @PostMapping(value = "/receta", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> crearReceta(
             @RequestPart("receta") String recetaJson,
-            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen,
+            HttpServletRequest request) {
         try {
+
+            // Validar autenticación
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return new ResponseEntity<>("No autorizado", HttpStatus.UNAUTHORIZED);
+            }
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
             Receta receta = mapper.readValue(recetaJson, Receta.class);
@@ -111,9 +117,11 @@ public class RecetaController {
         }
     }
 
-    @PutMapping("/receta/{id}")
-    public ResponseEntity<?> editarReceta(@PathVariable("id") Long id,
-            @RequestBody Receta receta,
+    @PutMapping(value = "/receta/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> editarReceta(
+            @PathVariable("id") Long id,
+            @RequestPart("receta") String recetaJson,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen,
             HttpServletRequest request) {
         try {
             // Validar autenticación
@@ -122,13 +130,20 @@ public class RecetaController {
                 return new ResponseEntity<>("No autorizado", HttpStatus.UNAUTHORIZED);
             }
 
+            // Convertir el JSON a objeto Receta
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            Receta receta = mapper.readValue(recetaJson, Receta.class);
+
             // Actualizar la receta
-            RecetaEntity recetaActualizada = recetaService.actualizarReceta(id, receta);
+            RecetaEntity recetaActualizada = recetaService.actualizarReceta(id, receta, imagen);
             return new ResponseEntity<>(recetaActualizada, HttpStatus.OK);
 
         } catch (EntityNotFoundException e) {
             System.err.println("Error: " + e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             System.err.println("Error al actualizar la receta: " + e.getMessage());
             return new ResponseEntity<>("Error al actualizar la receta",
