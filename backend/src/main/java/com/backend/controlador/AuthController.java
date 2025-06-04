@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.backend.modelos.UsuarioEntity;
+import com.backend.modelos.dto.ValidationErrorResponse;
+import com.backend.modelos.dto.ValidationException;
 import com.backend.repositorio.UsuarioRepositorio;
 import com.backend.servicio.UsuarioServicio;
 import com.shared.modelos.RegisterDTO;
@@ -65,24 +67,26 @@ public class AuthController {
     }
 
     @PostMapping("/registro")
-    public ResponseEntity<String> registrarUsuario(@RequestBody RegisterDTO dto) {
+    public ResponseEntity<?> registrarUsuario(@RequestBody RegisterDTO dto) {
 
-        Optional<UsuarioEntity> usuarioOptional = usuarioRepositorio.findByCorreo(dto.getCorreo());
-        if (usuarioOptional.isPresent()) {
-            return new ResponseEntity<>("El correo del usuario ya existe", HttpStatus.CONFLICT);
+        try {
+            UsuarioEntity usuarioGuardar = UsuarioEntity.builder()
+                    .nombre(dto.getNombre())
+                    .apellido(dto.getApellido())
+                    .correo(dto.getCorreo())
+                    .contrasena(dto.getContrasena())
+                    .fechaNac(dto.getFechaNac())
+                    .build();
+
+            usuarioServicio.crearUsuario(usuarioGuardar);
+            return ResponseEntity.ok("Usuario registrado exitosamente");
+
+        } catch (ValidationException e) {
+            return ResponseEntity.badRequest().body(e.getValidationErrors());
+        } catch (Exception e) {
+            ValidationErrorResponse errorResponse = new ValidationErrorResponse();
+            errorResponse.addError("Error interno del servidor: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
-        // IMPLEMENTAR UN SISTEMA PARA GUARDAR LAS CONTRASEÑA
-        // ENCRIPTADAS Y NO EN TEXTO PLANO EN LA DB
-        UsuarioEntity usuarioGuardar = UsuarioEntity.builder()
-                .nombre(dto.getNombre())
-                .apellido(dto.getApellido())
-                .correo(dto.getCorreo())
-                .contrasena(dto.getContrasena())
-                .fechaNac(dto.getFechaNac())
-                .build();
-
-        usuarioServicio.crearUsuario(usuarioGuardar);
-        return new ResponseEntity<>("usuario registrado", HttpStatus.OK);
-
     }
 }

@@ -61,6 +61,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- para las validaciones de los campos -->
+        <dependency>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>controlsfx</artifactId>
+            <version>11.2.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>

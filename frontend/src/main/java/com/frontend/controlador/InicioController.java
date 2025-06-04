@@ -11,10 +11,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -25,10 +28,15 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalTime;
+import org.controlsfx.validation.ValidationResult;
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
+import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
 
 public class InicioController {
 
     private final InicioService inicioService;
+    private ValidationSupport validationSupport;
 
     // constructor sin armumentos para javaFX e inicializacion de campos final
     public InicioController() {
@@ -85,6 +93,9 @@ public class InicioController {
     private ComboBox<Integer> minutosCoccionComboBox;
 
     @FXML
+    private Button guardarRecetaButton;
+
+    @FXML
     public void initialize() {
         // Inicializar ComboBox para horas (0-23)
         ObservableList<Integer> horas = FXCollections.observableArrayList();
@@ -109,6 +120,59 @@ public class InicioController {
         minutosCoccionComboBox.setValue(0);
 
         mostrarSaludo();
+        configurarValidaciones();
+    }
+
+    private void configurarValidaciones() {
+        validationSupport = new ValidationSupport();
+        validationSupport.setValidationDecorator(new StyleClassValidationDecoration());
+
+        // validacion para el nombre
+        validationSupport.registerValidator(nombreRecetaField, true,
+                Validator.createEmptyValidator("El 'nombre de la receta' es obligatorio"));
+
+        validationSupport.registerValidator(nombreRecetaField, (control, value) -> {
+            String nombre = (String) value;
+            if (nombre != null && nombre.length() > 50) {
+                return ValidationResult.fromError(nombreRecetaField,
+                        "El campo 'nombre de la receta' no puede exceder los 50 caracteres.");
+            }
+            if (nombre != null && !nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+")) {
+                return ValidationResult.fromError(nombreRecetaField,
+                        "El campo 'nombre de la receta' solo puede contener letras y espacios.");
+            }
+            return ValidationResult.fromResults();
+        });
+
+        // valida los ingredientes
+        validationSupport.registerValidator(ingredientesField, true, Validator.combine(
+                Validator.createEmptyValidator("El campo 'ingredientes' es obligatorio"),
+                Validator.createPredicateValidator(texto -> texto.toString().trim().length() <= 200,
+                        "El campo 'ingredientes' debe tener menos de 200 caracteres")));
+
+        // valida las instrucciones
+        validationSupport.registerValidator(instruccionesField, true, Validator.combine(
+                Validator.createEmptyValidator("El campo 'instrucciones' es obligatorio"),
+                Validator.createPredicateValidator(texto -> texto.toString().length() <= 399,
+                        "El campo 'instrucciones' debe tener menos de 400 caracteres")));
+
+        // Validación porciones
+        validationSupport.registerValidator(porcionesField, true,
+                Validator.createEmptyValidator("El campo 'porciones' es obligatorio"));
+        validationSupport.registerValidator(porcionesField, true, Validator.createPredicateValidator(
+                texto -> {
+                    if (texto == null || texto.toString().trim().isEmpty())
+                        return false;
+                    String porciones = texto.toString();
+                    return porciones.matches("^\\d+$") &&
+                            porciones.equals(porciones.trim());
+                },
+                "El campo 'porciones' debe ser un número válido sin espacios"));
+
+        // Validación de imagen
+        validationSupport.registerValidator(imagenPathField, false,
+                Validator.createPredicateValidator(this::validarFormatoImagen,
+                        "La imagen es obligatoria y solo se permiten imágenes en formato JPG, JPEG, PNG"));
     }
 
     private void mostrarSaludo() {
@@ -155,6 +219,16 @@ public class InicioController {
 
     @FXML
     private void guardarReceta() {
+        if (validationSupport.isInvalid()) {
+            // Mostrar mensaje de alerta con los errores
+            StringBuilder errores = new StringBuilder();
+            validationSupport.getValidationResult().getErrors().forEach(validationMessage -> {
+                errores.append("- ").append(validationMessage.getText()).append("\n");
+            });
+            mostrarAlerta("Error de validación", "Por favor, corrige los siguientes errores:\n\n" + errores.toString());
+            return;
+        }
+
         try {
             // Obtener datos del formulario
             String nombre = nombreRecetaField.getText();
@@ -209,7 +283,7 @@ public class InicioController {
                 inicioService.enviarRecetaAlBackend(recetaGuardar, imagenSeleccionada).thenAccept(response -> {
                     Platform.runLater(() -> {
                         if (response.statusCode() == 201) {
-                            mostrarAlerta("Éxito", "La receta se ha creado con éxito.");
+                            mostrarDialogoExito("Tu receta se ha creado exitosamente!");
                             limpiarFormulario();
                         } else {
                             // Mostrar el error del backend en la consola
@@ -230,6 +304,7 @@ public class InicioController {
             System.err.println("Error al guardar la receta: " + e.getMessage());
             mostrarAlerta("Error", "Por favor, verifica los datos ingresados.");
         }
+
     }
 
     private void limpiarFormulario() {
@@ -262,6 +337,42 @@ public class InicioController {
         alert.showAndWait();
     }
 
+    private void mostrarDialogoExito(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.setTitle("¡Éxito!");
+        alert.setHeaderText(null);
+
+        // Crear un contenedor personalizado
+        VBox contenido = new VBox(10);
+        contenido.setAlignment(Pos.CENTER);
+
+        Label iconoLabel = new Label("✓");
+        iconoLabel.setStyle("-fx-font-size: 48px; -fx-text-fill: #2ecc71;");
+
+        // Mensaje
+        Label mensajeLabel = new Label(mensaje);
+        mensajeLabel.setStyle("-fx-font-size: 14px;");
+
+        // Botón personalizado
+        Button okButton = new Button("Aceptar");
+        okButton.setStyle(
+                "-fx-background-color: #2ecc71;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-padding: 10 20;" +
+                        "-fx-cursor: hand;");
+
+        okButton.setOnAction(e -> {
+            alert.setResult(ButtonType.OK);
+            alert.close();
+        });
+
+        contenido.getChildren().addAll(iconoLabel, mensajeLabel, okButton);
+        contenido.setStyle("-fx-padding: 20;");
+
+        alert.getDialogPane().setContent(contenido);
+        alert.showAndWait();
+    }
+
     // Redirige a la pantalla "recetas.fxml"
     @FXML
     private void mostrarRecetas() {
@@ -291,6 +402,15 @@ public class InicioController {
             mostrarAlerta("Error", "No se pudo cargar la pantalla de login.");
             e.printStackTrace();
         }
+    }
+
+    private boolean validarFormatoImagen(Object archivo) {
+        if (archivo == null)
+            return false;
+        String nombreArchivo = archivo.toString().toLowerCase();
+        return nombreArchivo.endsWith(".jpg") ||
+                nombreArchivo.endsWith(".jpeg") ||
+                nombreArchivo.endsWith(".png");
     }
 
 }

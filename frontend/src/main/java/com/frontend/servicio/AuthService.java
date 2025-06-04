@@ -81,7 +81,8 @@ public class AuthService {
     }
 
     // SE DISPARA AL REGISTRAR UN USUARIO
-    public void enviarCredencialesRegistro(String nombre, String contraseña, String correo, String apellido,
+    public CompletableFuture<HttpResponse<String>> enviarCredencialesRegistro(String nombre, String contraseña,
+            String correo, String apellido,
             LocalDate fechaNac) {
         try {
             // Crear una instancia de RegisterDTO
@@ -98,21 +99,10 @@ public class AuthService {
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();
 
-            httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenAccept(response -> {
-                        System.out.println("Respuesta del backend (Registro):");
-                        System.out.println("Status Code: " + response.statusCode());
-                        System.out.println("Body: " + response.body());
-                    })
-                    .exceptionally(e -> {
-                        System.err.println("Error al enviar los datos de registro al backend: " + e.getMessage());
-                        e.printStackTrace();
-                        return null;
-                    });
+            return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
 
         } catch (IOException e) {
-            System.err.println("Error al enviar los datos de registro al backend: " + e.getMessage());
-            e.printStackTrace();
+            return CompletableFuture.failedFuture(e);
         }
     }
 

@@ -2,8 +2,11 @@ package com.frontend.controlador;
 
 import java.io.IOException;
 
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
+import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
+
 import com.frontend.servicio.AuthService;
-import com.frontend.servicio.InicioService;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -16,6 +19,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class LoginController {
+    private ValidationSupport validationSupport;
 
     @FXML
     private TextField correoField;
@@ -36,6 +40,17 @@ public class LoginController {
         String correo = correoField.getText();
         String password = passwordField.getText();
 
+        // Verificar si hay errores de validación antes de continuar
+        if (validationSupport.isInvalid()) {
+            // Recopilar todos los mensajes de error de los campos validados
+            StringBuilder errores = new StringBuilder();
+            validationSupport.getValidationResult().getErrors().forEach(validationMessage -> {
+                errores.append("- ").append(validationMessage.getText()).append("\n");
+            });
+            mostrarAlerta("Error de validación", "Por favor, corrige los siguientes errores:\n\n" + errores.toString());
+            return;
+        }
+
         authService.login(correo, password).thenAccept(loginSuccessful -> {
             if (loginSuccessful) {
                 // Asegurarse de que la carga de la pantalla se ejecute en el hilo de JavaFX
@@ -43,7 +58,8 @@ public class LoginController {
             } else {
                 // Mostrar alerta en el hilo de JavaFX
                 javafx.application.Platform
-                        .runLater(() -> mostrarAlerta("Error de login", "Nombre de usuario o contraseña incorrectos."));
+                        .runLater(
+                                () -> mostrarAlerta("Error de login", "Correo electronico o contraseña incorrectos."));
             }
         }).exceptionally(error -> {
             // Mostrar alerta en el hilo de JavaFX
@@ -57,6 +73,30 @@ public class LoginController {
     @FXML
     protected void handleRegisterButtonClick() {
         cargarPantallaRegistro();
+    }
+
+    @FXML
+    public void initialize() {
+        configurarValidaciones();
+    };
+
+    private void configurarValidaciones() {
+        validationSupport = new ValidationSupport();
+        validationSupport.setValidationDecorator(new StyleClassValidationDecoration());
+
+        // valida la contraseña
+        validationSupport.registerValidator(passwordField, true, Validator.createRegexValidator(
+                "La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, un número y un caracter especial.",
+                "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).{8,}$",
+                null));
+
+        validationSupport.registerValidator(correoField, true, Validator.combine(
+                Validator.createEmptyValidator("El campo 'correo' es obligatorio"),
+                Validator.createRegexValidator(
+                        "Campo correo no válido. Asegúrate de incluir '@' y un dominio válido (ej. .com, .org).",
+                        ".+@.+\\.[a-zA-Z]{2,6}",
+                        null)));
+
     }
 
     private void cargarPantallaRegistro() {

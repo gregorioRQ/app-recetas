@@ -34,6 +34,7 @@
                </font>
             </Label>
             <TextField fx:id="nombreRecetaField" promptText="Nombre de la receta" />
+
             <TextField fx:id="ingredientesField" promptText="Ingredientes" />
             <TextField fx:id="instruccionesField" promptText="Instrucciones" />
             <HBox spacing="5.0">
@@ -62,7 +63,7 @@
                <TextField fx:id="imagenPathField" prefWidth="200" editable="false" promptText="Ninguna imagen seleccionada"/>
                <Button text="Seleccionar imagen" onAction="#seleccionarImagen" />
             </HBox>
-            <Button text="Guardar receta" onAction="#guardarReceta" />
+            <Button fx:id="guardarRecetaButton" text="Guardar receta" onAction="#guardarReceta" />
          </children>
 
          <Button text="Atrás" onAction="#volverAtras" style="-fx-background-color: #f44336; -fx-text-fill: white;" />
