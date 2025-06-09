@@ -32,18 +32,18 @@ public class UsuarioEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = false, length = 20, nullable = false)
+    @Column(unique = false, length = 50, nullable = false)
     private String nombre;
-    @Column(unique = false, length = 20, nullable = false)
+    @Column(unique = false, length = 50, nullable = false)
     private String apellido;
 
-    @Column(unique = true, length = 20, nullable = false)
+    @Column(unique = true, length = 50, nullable = false)
     private String correo;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 30, nullable = false)
     private LocalDate fechaNac;
 
-    @Column(unique = true, length = 20, nullable = false)
+    @Column(unique = true, length = 120, nullable = false)
     private String contrasena;
 
     // Relación OneToMany bidireccional

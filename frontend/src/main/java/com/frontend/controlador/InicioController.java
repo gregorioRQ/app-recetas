@@ -178,10 +178,10 @@ public class InicioController {
     private void mostrarSaludo() {
         if (SessionManager.getInstance().getAuthToken() != null) {
             DecodedJWT jwt = JWT.decode(SessionManager.getInstance().getAuthToken());
-            String username = jwt.getClaim("username").asString();
+            String username = jwt.getClaim("nombre").asString();
             saludoLabel.setText("Hola, " + username);
         } else {
-            saludoLabel.setText("Hola, Usuario"); // Mensaje por defecto si no hay token
+            saludoLabel.setText("Hola, Usuario");
         }
     }
 
@@ -251,9 +251,9 @@ public class InicioController {
 
             if (SessionManager.getInstance().getAuthToken() != null) {
                 DecodedJWT jwt = JWT.decode(SessionManager.getInstance().getAuthToken());
-                String subject = jwt.getSubject(); // El subject contiene el ID del usuario (como String)
+
                 try {
-                    creadorId = Long.parseLong(subject);
+                    creadorId = jwt.getClaim("id").asLong();
                 } catch (NumberFormatException e) {
                     System.err.println("Error al parsear el ID del usuario desde el token: " + e.getMessage());
                     // mensaje para la ui

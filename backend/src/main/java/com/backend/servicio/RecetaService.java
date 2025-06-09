@@ -151,20 +151,23 @@ public class RecetaService {
         // Buscar la receta existente
         RecetaEntity recetaExistente = recetaRepositorio.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No se encontró la receta con ID: " + id));
-        try {
-            String pathImagen = recetaExistente.getPathImg();
-            // extraer solo el nombre del archivo de la ruta relativa
-            String nombreArchivo = pathImagen.substring(pathImagen.lastIndexOf("/") + 1);
-            // construir la ruta completa
-            Path rutaImagen = Paths.get(uploadDir, "recetas-imagenes", nombreArchivo);
-            Files.deleteIfExists(rutaImagen);
-        } catch (IOException ex) {
-            System.err.println("Error al intentar eliminar la imagen anterior: " + ex.getMessage());
+        if (nuevaImagen == null) {
+            System.out.println("NO SE PROPORCIONO NUEVA IMAGEN");
         }
 
         // Actualizar la imagen solo si se proporciona una nueva
         if (nuevaImagen != null && !nuevaImagen.isEmpty()) {
             validarImagen(nuevaImagen);
+            try {
+                String pathImagen = recetaExistente.getPathImg();
+                // extraer solo el nombre del archivo de la ruta relativa
+                String nombreArchivo = pathImagen.substring(pathImagen.lastIndexOf("/") + 1);
+                // construir la ruta completa
+                Path rutaImagen = Paths.get(uploadDir, "recetas-imagenes", nombreArchivo);
+                Files.deleteIfExists(rutaImagen);
+            } catch (IOException ex) {
+                System.err.println("Error al intentar eliminar la imagen anterior: " + ex.getMessage());
+            }
             String nuevaRutaImagen = guardarImagen(nuevaImagen);
             recetaExistente.setPathImg(nuevaRutaImagen);
         }

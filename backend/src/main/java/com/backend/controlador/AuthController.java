@@ -7,13 +7,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.backend.jwt.JwtBlacklistService;
+import com.backend.jwt.JwtTokenProvider;
 import com.backend.modelos.UsuarioEntity;
 import com.backend.modelos.dto.ValidationErrorResponse;
 import com.backend.modelos.dto.ValidationException;
@@ -21,60 +29,80 @@ import com.backend.repositorio.UsuarioRepositorio;
 import com.backend.servicio.UsuarioServicio;
 import com.shared.modelos.RegisterDTO;
 
-import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-
-    @Autowired
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final UsuarioServicio usuarioServicio;
-
-    @Autowired
+    private final AuthenticationManager authenticationManager;
     private final UsuarioRepositorio usuarioRepositorio;
+    private final PasswordEncoder passwordEncoder; // Para cifrar contraseñas
+    private final JwtTokenProvider jwtTokenProvider; // Para generar el JWT
+    private final JwtBlacklistService jwtBlacklistService; // Para el logout
 
-    // Inyecta la clave secreta desde la configuración (application.properties/yml o
-    // variables de entorno)
-    @Value("${app.jwt.secret}")
-    private String SECRET_KEY;
-    // Tiempo de expiración del token (en milisegundos) - ejemplo: 1 hora
-    private static final long EXPIRATION_TIME = 3_600_000;
+    // Inyección de dependencias a través del constructor
+    public AuthController(AuthenticationManager authenticationManager,
+            UsuarioRepositorio usuarioRepositorio,
+            PasswordEncoder passwordEncoder,
+            JwtTokenProvider jwtTokenProvider,
+            JwtBlacklistService jwtBlacklistService,
+            UsuarioServicio usuarioServicio) {
+        this.authenticationManager = authenticationManager;
+        this.usuarioRepositorio = usuarioRepositorio;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtBlacklistService = jwtBlacklistService;
+        this.usuarioServicio = usuarioServicio;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody RegisterDTO dto) {
-        String correo = dto.getCorreo();
-        String contraseña = dto.getContrasena();
 
-        // 1. Autenticar al usuario (verificar si existe y la contraseña es correcta)
-        Optional<UsuarioEntity> usuarioOptional = usuarioRepositorio.findByCorreo(correo);
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            dto.getCorreo(),
+                            dto.getContrasena()));
+            // Si la autenticación es exitosa, establecer la autenticación en el contexto de
+            // seguridad
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        if (usuarioOptional.isEmpty() || !usuarioOptional.get().getContrasena().equals(contraseña)) {
-            return new ResponseEntity<>("Credenciales inválidas.", HttpStatus.UNAUTHORIZED);
+            // Generar el token JWT para el usuario autenticado
+            Optional<UsuarioEntity> usOptional = usuarioRepositorio.findByCorreo(authentication.getName());
+
+            if (usOptional.isEmpty()) {
+                // Esto no debería pasar si la autenticación fue exitosa
+                return new ResponseEntity<>("Usuario no encontrado", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            UsuarioEntity authenticatedUser = usOptional.get();
+
+            // Generar el token JWT, pasando el correo, ID y nombre
+            String token = jwtTokenProvider.generateToken(
+                    authenticatedUser.getId(),
+                    authenticatedUser.getNombre(),
+                    authenticatedUser.getCorreo());
+            return new ResponseEntity<>(token, HttpStatus.OK);
+        } catch (org.springframework.security.core.AuthenticationException e) {
+            // Capturar la excepción de autenticación para dar un mensaje más específico
+            log.error("Login fallido para usuario {}: {}", dto.getCorreo(), e.getMessage());
+            return new ResponseEntity<>("Correo o contraseña incorrecto.", HttpStatus.UNAUTHORIZED);
         }
-
-        UsuarioEntity usuario = usuarioOptional.get();
-
-        // 2. Generar el token JWT si la autenticación es exitosa
-        Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
-        String token = JWT.create()
-                .withSubject(usuario.getId().toString()) // Identifica al usuario
-                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .withClaim("username", usuario.getNombre()) // Puedes incluir más información si es necesario
-                .sign(algorithm);
-        // 3. Por ahora, devolvemos el token en el cuerpo de la respuesta
-        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
-    @PostMapping("/registro")
+    @PostMapping("/register")
     public ResponseEntity<?> registrarUsuario(@RequestBody RegisterDTO dto) {
 
         try {
+            if (usuarioRepositorio.findByCorreo(dto.getCorreo()).isPresent()) {
+                return new ResponseEntity<>("Username is already taken!", HttpStatus.BAD_REQUEST);
+            }
             UsuarioEntity usuarioGuardar = UsuarioEntity.builder()
                     .nombre(dto.getNombre())
                     .apellido(dto.getApellido())
                     .correo(dto.getCorreo())
-                    .contrasena(dto.getContrasena())
+                    .contrasena(passwordEncoder.encode(dto.getContrasena()))
                     .fechaNac(dto.getFechaNac())
                     .build();
 
@@ -88,5 +116,29 @@ public class AuthController {
             errorResponse.addError("Error interno del servidor: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        String jwt = getJwtFromRequest(request);
+
+        if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+            Date expiration = jwtTokenProvider.getExpirationDateFromJWT(jwt);
+            long expiresInMillis = expiration.getTime() - System.currentTimeMillis();
+
+            // Añadir el token a la lista negra por el tiempo restante hasta su expiración
+            jwtBlacklistService.blacklistToken(jwt, expiresInMillis);
+            return ResponseEntity.ok("Logout successful.");
+        }
+        return ResponseEntity.badRequest().body("Invalid JWT token or no token provided.");
+    }
+
+    // Método auxiliar para extraer el JWT de la solicitud
+    private String getJwtFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 }

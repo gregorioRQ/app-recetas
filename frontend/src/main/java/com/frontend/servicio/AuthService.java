@@ -26,7 +26,6 @@ public class AuthService {
 
     }
 
-    // SE DISPARA AL LOGUEARSE UN USUARIO
     public CompletableFuture<Boolean> login(String correo, String contrasena) {
         RegisterDTO loginRequest = RegisterDTO.builder().correo(correo).contrasena(contrasena).build();
 
@@ -45,7 +44,6 @@ public class AuthService {
                     // Despues de recibir la respuesta éste bloque se ejecuta
                     .thenApply(response -> {
                         if (response.statusCode() == 200) {
-                            // Login exitoso, extraemos el token del cuerpo de la respuesta
                             String token = response.body();
                             // guardar el token en el SessionManager
                             SessionManager.getInstance().setAuthToken(token);
@@ -80,12 +78,10 @@ public class AuthService {
         }
     }
 
-    // SE DISPARA AL REGISTRAR UN USUARIO
     public CompletableFuture<HttpResponse<String>> enviarCredencialesRegistro(String nombre, String contraseña,
             String correo, String apellido,
             LocalDate fechaNac) {
         try {
-            // Crear una instancia de RegisterDTO
             RegisterDTO registerDTO = RegisterDTO.builder().nombre(nombre).contrasena(contraseña).correo(correo)
                     .apellido(apellido).fechaNac(fechaNac).build();
 
@@ -94,7 +90,7 @@ public class AuthService {
 
             // Crear la petición POST al endpoint de registro del backend
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(backendBaseUrl + "/registro")) // Endpoint para el registro
+                    .uri(URI.create(backendBaseUrl + "/register")) // Endpoint para el registro
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();

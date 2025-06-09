@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.backend.jwt.JwtTokenProvider;
 import com.backend.modelos.RecetaEntity;
 import com.backend.servicio.RecetaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,6 +38,8 @@ import jakarta.servlet.http.HttpServletRequest;
 public class RecetaController {
     @Autowired
     private RecetaService recetaService;
+    @Autowired
+    private JwtTokenProvider provider;
 
     /*
      * @RequestPart para el manejo de las partes de la solicitud
@@ -48,9 +53,9 @@ public class RecetaController {
         try {
 
             // Validar autenticación
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                return new ResponseEntity<>("No autorizado", HttpStatus.UNAUTHORIZED);
+            String jwt = getJwtFromRequest(request);
+            if (!provider.validateToken(jwt)) {
+                return new ResponseEntity<>("Token inválido", HttpStatus.UNAUTHORIZED);
             }
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
@@ -76,23 +81,16 @@ public class RecetaController {
     public ResponseEntity<?> todasLasRecetasUsuarioID(HttpServletRequest request) {
 
         try {
-            // Obtener el token del encabezado Authorization
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            String jwt = getJwtFromRequest(request);
+            if (!provider.validateToken(jwt)) {
+                return new ResponseEntity<>("Token inválido", HttpStatus.UNAUTHORIZED);
             }
-            String token = authHeader.substring(7); // Remover "Bearer "
+            Long userId = provider.getUserIdFromJWT(jwt);
 
-            // Decodificar el token y obtener el subject (ID del usuario)
-            DecodedJWT decodedJWT = JWT.decode(token);
-            String userId = decodedJWT.getSubject();
-
-            List<RecetaEntity> recetas = recetaService.todasLasRecetasPorUsuarioId(Long.parseLong(userId));
+            List<RecetaEntity> recetas = recetaService.todasLasRecetasPorUsuarioId(userId);
             return new ResponseEntity<>(recetas, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            // Mostrar el error en la consola del backend
             System.err.println("Error: " + e.getMessage());
-            // Enviar el mensaje de error al frontend
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>("Ocurrió un error inesperado. Por favor, inténtalo más tarde.",
@@ -104,10 +102,9 @@ public class RecetaController {
     @DeleteMapping("/receta/{id}")
     public ResponseEntity<?> eliminarRecetaPorId(@PathVariable("id") Long id, HttpServletRequest request) {
         try {
-            // Obtener el token del encabezado Authorization
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            String jwt = getJwtFromRequest(request);
+            if (!provider.validateToken(jwt)) {
+                return new ResponseEntity<>("Token inválido", HttpStatus.UNAUTHORIZED);
             }
             recetaService.eliminarRecetaPorId(id);
             return new ResponseEntity<>("Receta eliminada", HttpStatus.OK);
@@ -124,10 +121,9 @@ public class RecetaController {
             @RequestPart(value = "imagen", required = false) MultipartFile imagen,
             HttpServletRequest request) {
         try {
-            // Validar autenticación
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                return new ResponseEntity<>("No autorizado", HttpStatus.UNAUTHORIZED);
+            String jwt = getJwtFromRequest(request);
+            if (!provider.validateToken(jwt)) {
+                return new ResponseEntity<>("Token inválido", HttpStatus.UNAUTHORIZED);
             }
 
             // Convertir el JSON a objeto Receta
@@ -155,9 +151,9 @@ public class RecetaController {
     public ResponseEntity<?> editarRecetaParcial(@PathVariable("id") Long id, @RequestBody Map<String, Object> cambios,
             HttpServletRequest request) {
         try {
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                return new ResponseEntity<>("No autorizado", HttpStatus.UNAUTHORIZED);
+            String jwt = getJwtFromRequest(request);
+            if (!provider.validateToken(jwt)) {
+                return new ResponseEntity<>("Token inválido", HttpStatus.UNAUTHORIZED);
             }
 
             RecetaEntity recetaActualizada = recetaService.actualizarRecetaParcial(id, cambios);
@@ -171,4 +167,12 @@ public class RecetaController {
         }
     }
 
+    // Método auxiliar para extraer el JWT de la solicitud
+    private String getJwtFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
 }

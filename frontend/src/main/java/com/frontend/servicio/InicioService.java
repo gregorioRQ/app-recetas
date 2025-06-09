@@ -94,17 +94,20 @@ public class InicioService {
     public CompletableFuture<HttpResponse<String>> actualizarReceta(Receta receta, File imagenFile) {
         try {
             // si no hay imagen hacer una peticion put normal
-            if (imagenFile == null) {
-                String requestBody = objectMapper.writeValueAsString(receta);
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(backendBaseUrl + "/receta/" + receta.getId()))
-                        .header("Content-Type", "application/json")
-                        .header("Authorization", "Bearer " + SessionManager.getInstance().getAuthToken())
-                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
-                        .build();
-
-                return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
-            }
+            /*
+             * if (imagenFile == null) {
+             * String requestBody = objectMapper.writeValueAsString(receta);
+             * HttpRequest request = HttpRequest.newBuilder()
+             * .uri(URI.create(backendBaseUrl + "/receta/" + receta.getId()))
+             * .header("Content-Type", "application/json")
+             * .header("Authorization", "Bearer " +
+             * SessionManager.getInstance().getAuthToken())
+             * .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
+             * .build();
+             * 
+             * return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+             * }
+             */
             // si hay una nueva imagen, usar multipart
             String boundary = "----WebKitFormBoundary" + System.currentTimeMillis();
             byte[] bodyBytes = construirMultipartBody(receta, imagenFile, boundary);
