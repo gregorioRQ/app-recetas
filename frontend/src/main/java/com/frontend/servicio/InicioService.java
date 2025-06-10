@@ -126,6 +126,16 @@ public class InicioService {
         }
     }
 
+    public CompletableFuture<HttpResponse<String>> cerrarSesion() {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(backendBaseUrl + "/auth/logout"))
+                .header("Authorization", "Bearer " + SessionManager.getInstance().getAuthToken())
+                .POST(HttpRequest.BodyPublishers.noBody()) // Usar POST sin cuerpo
+                .build();
+
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+    }
+
     // metodo aux
     private byte[] construirMultipartBody(Receta receta, File imagenFile, String boundary) throws IOException {
         String CRLF = "\r\n";

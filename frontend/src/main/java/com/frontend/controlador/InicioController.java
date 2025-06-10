@@ -96,6 +96,9 @@ public class InicioController {
     private Button guardarRecetaButton;
 
     @FXML
+    private Button cerrarSesionButton;
+
+    @FXML
     public void initialize() {
         // Inicializar ComboBox para horas (0-23)
         ObservableList<Integer> horas = FXCollections.observableArrayList();
@@ -402,6 +405,35 @@ public class InicioController {
             mostrarAlerta("Error", "No se pudo cargar la pantalla de login.");
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void cerrarSesion() {
+        inicioService.cerrarSesion().thenAccept(response -> {
+            Platform.runLater(() -> {
+                if (response.statusCode() == 200) {
+                    // Redirigir al usuario a la pantalla de inicio de sesión
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/vistas/login.fxml"));
+                        Parent root = loader.load();
+                        Stage stage = (Stage) saludoLabel.getScene().getWindow();
+                        stage.setScene(new Scene(root));
+                        stage.setTitle("Inicio de Sesión");
+                        stage.show();
+                    } catch (IOException e) {
+                        mostrarAlerta("Error", "No se pudo cargar la pantalla de inicio de sesión.");
+                        e.printStackTrace();
+                    }
+                } else {
+                    mostrarAlerta("Error", "No se pudo cerrar la sesión. Por favor, inténtalo de nuevo.");
+                }
+            });
+        }).exceptionally(e -> {
+            Platform.runLater(() -> {
+                mostrarAlerta("Error", "Ocurrió un error inesperado al cerrar la sesión.");
+            });
+            return null;
+        });
     }
 
     private boolean validarFormatoImagen(Object archivo) {

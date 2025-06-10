@@ -15,6 +15,7 @@
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
    </padding>
    <children>
+      <Button fx:id="cerrarSesionButton" text="Cerrar sesion" onAction="#cerrarSesion"/>
       <Label fx:id="saludoLabel" text="Hola, [Nombre de Usuario]">
          <font>
             <Font size="24.0" />
