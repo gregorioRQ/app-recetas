@@ -1,7 +1,6 @@
 package com.frontend.controlador;
 
 import com.frontend.AppConfig;
-import com.frontend.SessionManager;
 import com.frontend.servicio.InicioService;
 import com.shared.modelos.Receta;
 
@@ -21,7 +20,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import lombok.Value;
 
 import java.io.IOException;
 import java.util.List;
@@ -88,23 +86,30 @@ public class RecetasController {
 
             // Llamar al servicio para obtener las recetas del usuario
             List<Receta> recetas = inicioService.obtenerRecetasDelUsuario();
+            if (recetas.isEmpty()) {
+                // Mostrar un mensaje amigable si no hay recetas
+                Label mensaje = new Label("No has creado ninguna receta todavía");
+                mensaje.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #555;");
+                recetasGrid.add(mensaje, 0, 0);
+                GridPane.setColumnSpan(mensaje, 3);
+            } else {
+                // Renderizar las recetas en el GridPane
+                int row = 0;
+                int col = 0;
+                for (Receta receta : recetas) {
+                    VBox tarjeta = crearTarjetaReceta(receta);
+                    recetasGrid.add(tarjeta, col, row);
 
-            // Renderizar las recetas en el GridPane
-            int row = 0;
-            int col = 0;
-            for (Receta receta : recetas) {
-                VBox tarjeta = crearTarjetaReceta(receta);
-                recetasGrid.add(tarjeta, col, row);
+                    // Si esta es la receta que estaba seleccionada, actualizar sus detalles
+                    if (recetaSeleccionadaId != null && receta.getId().equals(recetaSeleccionadaId)) {
+                        actualizarDetallesReceta(receta);
+                    }
 
-                // Si esta es la receta que estaba seleccionada, actualizar sus detalles
-                if (recetaSeleccionadaId != null && receta.getId().equals(recetaSeleccionadaId)) {
-                    actualizarDetallesReceta(receta);
-                }
-
-                col++;
-                if (col == 3) { // Máximo 3 tarjetas por fila
-                    col = 0;
-                    row++;
+                    col++;
+                    if (col == 3) { // Máximo 3 tarjetas por fila
+                        col = 0;
+                        row++;
+                    }
                 }
             }
         } catch (RuntimeException e) {
@@ -119,6 +124,7 @@ public class RecetasController {
             Platform.runLater(
                     () -> mostrarAlerta("Error", "Ocurrió un error inesperado. Por favor, inténtalo más tarde."));
         }
+
     }
 
     /*

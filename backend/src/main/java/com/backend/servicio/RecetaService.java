@@ -42,12 +42,8 @@ public class RecetaService {
 
     @Transactional
     public void guardarReceta(Receta receta, MultipartFile imagen) {
-        Optional<UsuarioEntity> usuarioOp = usuarioRepositorio.findById(receta.getCreadorId());
-
-        UsuarioEntity usuario = usuarioOp.get();
-        if (usuario == null) {
-            throw new EntityNotFoundException("Usuario no encontrado");
-        }
+        UsuarioEntity usuario = usuarioRepositorio.findById(receta.getCreadorId())
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
         if (imagen != null && !imagen.isEmpty()) {
             validarImagen(imagen);
@@ -64,7 +60,7 @@ public class RecetaService {
         recetaGuardar.setPorciones(receta.getPorciones());
         recetaGuardar.setPathImg(receta.getPathImg());
         recetaGuardar.setUsuario(usuario);
-
+        recetaGuardar.setCreadorId(receta.getCreadorId());
         recetaRepositorio.save(recetaGuardar);
 
     }

@@ -15,21 +15,6 @@ public class Receta {
     private Integer porciones;
     private String pathImg;
 
-    /*
-     * // Categoría de la receta (ej: "Desayuno", "Almuerzo", "Cena", "Postre",
-     * // "Vegetariana", "Vegana", etc.).
-     * private String categoria;
-     * private Date fechaCreacion;
-     * private Integer puntuacion;
-     * // Lista de comentarios de los usuarios (esto probablemente sería una entidad
-     * // separada relacionada).
-     * private List<Comentarios> comentarios;
-     * // Lista de usuarios que han marcado esta receta como favorita (esto
-     * // probablemente sería una relación muchos a muchos con la tabla de
-     * usuarios).
-     * private List<Favoritos> favoritos;
-     */
-
     public Receta() {
     }
 

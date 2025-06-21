@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.frontend.SessionManager;
+import com.shared.modelos.LoginDTO;
 import com.shared.modelos.RegisterDTO;
 
 public class AuthService {
@@ -27,7 +28,7 @@ public class AuthService {
     }
 
     public CompletableFuture<Boolean> login(String correo, String contrasena) {
-        RegisterDTO loginRequest = RegisterDTO.builder().correo(correo).contrasena(contrasena).build();
+        LoginDTO loginRequest = new LoginDTO(correo, contrasena);
 
         try {
             String requestBody = objectMapper.writeValueAsString(loginRequest);

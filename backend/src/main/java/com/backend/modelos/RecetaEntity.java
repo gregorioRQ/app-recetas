@@ -25,7 +25,7 @@ public class RecetaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     // titulo o nombre de la receta
-    @Column(nullable = false, length = 20, unique = true)
+    @Column(nullable = false, length = 110, unique = true)
     private String nombre;
     @Column(nullable = false, length = 400)
     private String ingredientes;
@@ -39,7 +39,7 @@ public class RecetaEntity {
 
     @Column(nullable = false)
     private LocalTime tiempoCoccion;
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 4)
     private Integer porciones;
 
     // Relación ManyToOne inversa

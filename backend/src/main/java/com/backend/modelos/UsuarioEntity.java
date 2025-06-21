@@ -43,7 +43,7 @@ public class UsuarioEntity {
     @Column(length = 30, nullable = false)
     private LocalDate fechaNac;
 
-    @Column(unique = true, length = 120, nullable = false)
+    @Column(length = 120, nullable = false)
     private String contrasena;
 
     // Relación OneToMany bidireccional

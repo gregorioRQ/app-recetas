@@ -2,11 +2,33 @@ package com.shared.modelos;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
+
 public class RegisterDTO {
+
+    @NotBlank(message = "El nombre no puede estar vacío")
+    @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres")
     private String nombre;
+
+    @NotBlank(message = "El apellido no puede estar vacío")
+    @Size(min = 2, max = 50, message = "El apellido debe tener entre 2 y 50 caracteres")
     private String apellido;
+
+    @NotBlank(message = "El correo no puede estar vacío")
+    @Size(max = 50, message = "El correo no puede exceder los 50 caracteres")
+    @Email(message = "El formato del correo es inválido")
     private String correo;
+
+    @NotNull(message = "La fecha de nacimiento no puede estar vacía")
+    @Past(message = "La fecha de nacimiento debe ser una fecha pasada")
     private LocalDate fechaNac;
+
+    @NotBlank(message = "La contraseña no puede estar vacía")
+    @Size(min = 6, max = 120, message = "La contraseña debe tener entre 6 y 120")
     private String contrasena;
 
     // Constructor privado para el Builder

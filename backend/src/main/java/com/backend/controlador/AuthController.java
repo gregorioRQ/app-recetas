@@ -3,8 +3,6 @@ package com.backend.controlador;
 import java.util.Date;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,12 +22,13 @@ import com.backend.jwt.JwtBlacklistService;
 import com.backend.jwt.JwtTokenProvider;
 import com.backend.modelos.UsuarioEntity;
 import com.backend.modelos.dto.ValidationErrorResponse;
-import com.backend.modelos.dto.ValidationException;
 import com.backend.repositorio.UsuarioRepositorio;
 import com.backend.servicio.UsuarioServicio;
+import com.shared.modelos.LoginDTO;
 import com.shared.modelos.RegisterDTO;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -58,7 +57,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody RegisterDTO dto) {
+    public ResponseEntity<String> login(@Valid @RequestBody LoginDTO dto) {
 
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -92,11 +91,10 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registrarUsuario(@RequestBody RegisterDTO dto) {
-
+    public ResponseEntity<?> registrarUsuario(@Valid @RequestBody RegisterDTO dto) {
         try {
             if (usuarioRepositorio.findByCorreo(dto.getCorreo()).isPresent()) {
-                return new ResponseEntity<>("Username is already taken!", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("El correo ya esta en uso", HttpStatus.BAD_REQUEST);
             }
             UsuarioEntity usuarioGuardar = UsuarioEntity.builder()
                     .nombre(dto.getNombre())
@@ -109,8 +107,6 @@ public class AuthController {
             usuarioServicio.crearUsuario(usuarioGuardar);
             return ResponseEntity.ok("Usuario registrado exitosamente");
 
-        } catch (ValidationException e) {
-            return ResponseEntity.badRequest().body(e.getValidationErrors());
         } catch (Exception e) {
             ValidationErrorResponse errorResponse = new ValidationErrorResponse();
             errorResponse.addError("Error interno del servidor: " + e.getMessage());
