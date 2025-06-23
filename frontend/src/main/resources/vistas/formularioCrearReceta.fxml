@@ -48,7 +48,7 @@
                   <Font size="16.0" />
                </font>
             </Label>
-            <Label fx:id="textAreaPreparacion" layoutX="20.0" layoutY="23.0" prefHeight="40.0" prefWidth="371.0" styleClass="lblPreparacion" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Preparación" GridPane.rowIndex="4">
+            <Label fx:id="textAreaPreparacion" layoutX="20.0" layoutY="23.0" prefHeight="40.0" prefWidth="371.0" styleClass="lblPreparacion" stylesheets="@../estilos/formularioCrearRecetaStyles.css" GridPane.rowIndex="4">
                <font>
                   <Font size="16.0" />
                </font>

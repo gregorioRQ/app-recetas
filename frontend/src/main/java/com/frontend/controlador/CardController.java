@@ -1,9 +1,13 @@
 package com.frontend.controlador;
 
+import java.io.IOError;
+import java.io.IOException;
+
 import com.shared.modelos.Receta;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class CardController {
@@ -26,12 +31,15 @@ public class CardController {
     @FXML
     private VBox vboxContainer;
 
+    private Receta receta;
+
     @FXML
     void onVerMas(ActionEvent event) {
-
+        abrirReceta(receta);
     }
 
     public void setDatos(Receta receta) {
+        this.receta = receta;
         lblNombre.setText(receta.getNombre());
         establecerImagen(receta.getPathImg());
     }
@@ -62,4 +70,23 @@ public class CardController {
         imgView.setImage(image);
     }
 
+    private void abrirReceta(Receta receta) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/vistas/receta.fxml"));
+            VBox nodoRoot = loader.load();
+            RecetaController controller = loader.getController();
+            controller.setDatos(receta);
+
+            Scene scene = new Scene(nodoRoot);
+            Stage stage = new Stage();
+            stage.setTitle("Detalle receta");
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.show();
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 }
