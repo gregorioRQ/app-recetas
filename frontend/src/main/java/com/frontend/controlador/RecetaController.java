@@ -139,18 +139,15 @@ public class RecetaController {
         contenido.setAlignment(Pos.CENTER);
 
         Label iconoLabel = new Label("✓");
-        iconoLabel.setStyle("-fx-font-size: 48px; -fx-text-fill: #2ecc71;");
+        iconoLabel.setStyle("-fx-font-size: 48px; -fx-text-fill: rgb(161, 237, 235);");
 
         Label mensajeLabel = new Label(mensaje);
-        mensajeLabel.setStyle("-fx-font-size: 14px;");
+        mensajeLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: white");
 
         contenido.getChildren().addAll(iconoLabel, mensajeLabel);
         contenido.setStyle(
                 "-fx-padding: 20;" +
-                        "-fx-background-radius: 18px;" +
-                        "-fx-border-radius: 18px;" +
-                        "-fx-background-color: white;" +
-                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 24, 0.5, 0, 6);");
+                        "-fx-background-color: #529a5c; -fx-border-width: 3px;-fx-border-color:  #0d345b");
         contenido.setPrefWidth(300);
 
         Stage dialogStage = new Stage();
@@ -159,13 +156,14 @@ public class RecetaController {
         dialogStage.setScene(new Scene(contenido));
         dialogStage.show();
 
-        PauseTransition delay = new PauseTransition(Duration.seconds(1.5));
+        PauseTransition delay = new PauseTransition(Duration.seconds(1));
         delay.setOnFinished(e -> {
             dialogStage.close();
             ((Stage) btnEliminar.getScene().getWindow()).close();
             onRecetaEliminada.run();
         });
         delay.play();
+
     }
 
 }
