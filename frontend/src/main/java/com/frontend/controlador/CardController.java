@@ -33,6 +33,12 @@ public class CardController {
 
     private Receta receta;
 
+    private Runnable onRecetaEliminada;
+
+    public void setOnRecetaEliminada(Runnable callback) {
+        this.onRecetaEliminada = callback;
+    }
+
     @FXML
     void onVerMas(ActionEvent event) {
         abrirReceta(receta);
@@ -76,6 +82,7 @@ public class CardController {
             VBox nodoRoot = loader.load();
             RecetaController controller = loader.getController();
             controller.setDatos(receta);
+            controller.setOnRecetaEliminada(onRecetaEliminada);
 
             Scene scene = new Scene(nodoRoot);
             Stage stage = new Stage();

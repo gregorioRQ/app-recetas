@@ -19,7 +19,7 @@
             <Font size="24.0" />
          </font>
       </Label>
-      <Button fx:id="btnVerMas" alignment="CENTER" mnemonicParsing="false" onAction="#onVerMas" prefHeight="31.0" prefWidth="138.0" styleClass="btnVerMas" stylesheets="@../estilos/card.css" text="Button">
+      <Button fx:id="btnVerMas" alignment="CENTER" mnemonicParsing="false" onAction="#onVerMas" prefHeight="31.0" prefWidth="138.0" styleClass="btnVerMas" stylesheets="@../estilos/card.css" text="Ver más">
          <font>
             <Font size="14.0" />
          </font></Button>

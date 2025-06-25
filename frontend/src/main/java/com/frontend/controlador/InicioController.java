@@ -18,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -65,13 +66,28 @@ public class InicioController {
         flowPaneContainer.getChildren().clear();
         try {
             List<Receta> recetas = inicioService.obtenerRecetasDelUsuario();
-            for (Receta receta : recetas) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/vistas/card.fxml"));
-                Parent rootNode = loader.load();
-                CardController controller = loader.getController();
-                controller.setDatos(receta);
-                flowPaneContainer.getChildren().add(rootNode);
+            if (recetas.isEmpty()) {
+                Label mensaje = new Label("No hay recetas aun, prueba crear una");
+                mensaje.setStyle("-fx-font-size: 38px; -fx-text-fill: #aad19e; -fx-font-weight: bold;");
+                // Centrar el texto dentro del label
+                mensaje.setMaxWidth(Double.MAX_VALUE);
+                mensaje.setMaxHeight(Double.MAX_VALUE);
+                mensaje.setAlignment(javafx.geometry.Pos.CENTER);
+
+                // Centrar el contenido del FlowPane
+                flowPaneContainer.setAlignment(javafx.geometry.Pos.CENTER);
+                flowPaneContainer.getChildren().add(mensaje);
+            } else {
+                for (Receta receta : recetas) {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/vistas/card.fxml"));
+                    Parent rootNode = loader.load();
+                    CardController controller = loader.getController();
+                    controller.setDatos(receta);
+                    controller.setOnRecetaEliminada(this::cargarRecetas);
+                    flowPaneContainer.getChildren().add(rootNode);
+                }
             }
+
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
             mostrarAlerta("Error", "No se pudieron cargar las recetas.");
@@ -136,10 +152,15 @@ public class InicioController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/vistas/formularioCrearReceta.fxml"));
             Parent root = loader.load();
 
+            // Pasa el callback al controlador del formulario
+            FormularioCrearRecetaController controller = loader.getController();
+            controller.setOnRecetaCreada(this::cargarRecetas);
+
             Stage stage = new Stage();
             stage.setResizable(false);
             stage.setScene(new Scene(root));
             stage.setTitle("Crear receta");
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.show();
 
         } catch (IOException ex) {

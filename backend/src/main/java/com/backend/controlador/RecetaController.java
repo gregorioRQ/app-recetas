@@ -239,8 +239,6 @@ public class RecetaController {
             errores.put("instrucciones", "El campo 'instrucciones' es obligatorio.");
         } else if (instrucciones.length() < 3 || instrucciones.length() > 4000) {
             errores.put("instrucciones", "El campo 'instrucciones' debe tener entre 3 y 4000 caracteres.");
-        } else if (!instrucciones.matches("[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\\s\\-_,.*+/%=()!\\\\/]+")) {
-            errores.put("instrucciones", "El campo 'instrucciones' contiene caracteres no permitidos.");
         }
 
         // Validar porciones

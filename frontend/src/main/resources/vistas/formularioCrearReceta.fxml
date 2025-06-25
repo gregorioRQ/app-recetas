@@ -15,7 +15,7 @@
 
 <VBox fx:id="VboxFormularioRecetaContainer" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="725.0" prefWidth="640.0" styleClass="VboxContainer" stylesheets="@../estilos/formularioCrearRecetaStyles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.frontend.controlador.FormularioCrearRecetaController">
    <children>
-      <Label alignment="CENTER" contentDisplay="TOP" maxWidth="1.7976931348623157E308" prefHeight="114.0" prefWidth="708.0" styleClass="lblCabecera" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Formulario para crear la receata">
+      <Label alignment="CENTER" contentDisplay="TOP" maxWidth="1.7976931348623157E308" prefHeight="114.0" prefWidth="708.0" styleClass="lblCabecera" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Cree su receta!">
          <font>
             <Font size="25.0" />
          </font>
@@ -43,12 +43,12 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
          <children>
-            <Label prefHeight="40.0" prefWidth="371.0" styleClass="lblNombreReceta" stylesheets="@../estilos/styles.css" text="Nombre">
+            <Label fx:id="lblNombre" prefHeight="40.0" prefWidth="371.0" styleClass="lblNombreReceta" stylesheets="@../estilos/styles.css" text="Nombre">
                <font>
                   <Font size="16.0" />
                </font>
             </Label>
-            <Label fx:id="textAreaPreparacion" layoutX="20.0" layoutY="23.0" prefHeight="40.0" prefWidth="371.0" styleClass="lblPreparacion" stylesheets="@../estilos/formularioCrearRecetaStyles.css" GridPane.rowIndex="4">
+            <Label fx:id="lblPreparacion" layoutX="20.0" layoutY="23.0" prefHeight="40.0" prefWidth="371.0" styleClass="lblPreparacion" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Preparacion" GridPane.rowIndex="4">
                <font>
                   <Font size="16.0" />
                </font>
@@ -81,7 +81,7 @@
                   <Font size="16.0" />
                </font>
             </Label>
-            <TextArea prefHeight="200.0" prefWidth="200.0" promptText="escribe aqui" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="4" GridPane.rowSpan="4" />
+            <TextArea fx:id="textAreaPreparacion" prefHeight="200.0" prefWidth="200.0" promptText="escribe aqui" styleClass="textAreaPreparacion" stylesheets="@../estilos/formularioCrearRecetaStyles.css" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="4" GridPane.rowSpan="4" />
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
                <children>
                   <ComboBox fx:id="comboBoxHorasPreparacion" prefHeight="25.0" prefWidth="105.0" promptText="Horas" styleClass="comboBoxHorasPreparacion" stylesheets="@../estilos/formularioCrearRecetaStyles.css" />
@@ -100,7 +100,7 @@
                   <Button fx:id="btnSelecImg" mnemonicParsing="false" onAction="#onSeleccionarImagen" prefHeight="40.0" prefWidth="72.0" styleClass="btnSelecImg" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Elegir" />
                </children>
             </HBox>
-            <TextArea fx:id="textAreaIngredientes" prefHeight="200.0" prefWidth="200.0" promptText="escribe aquí" styleClass="textAreaIngredientes" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="3" />
+            <TextArea fx:id="textAreaIngredientes" prefHeight="200.0" prefWidth="200.0" promptText="escribe aquí" styleClass="textAreaIngredientes" stylesheets="@../estilos/formularioCrearRecetaStyles.css" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="3" />
          </children>
          <VBox.margin>
             <Insets bottom="20.0" />
@@ -108,11 +108,7 @@
       </GridPane>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
          <children>
-            <Button fx:id="btnAtras" mnemonicParsing="false" onAction="#onIrAtras" prefHeight="25.0" prefWidth="83.0" styleClass="btnAtras" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Atras">
-               <font>
-                  <Font size="14.0" />
-               </font></Button>
-            <Button fx:id="btnGuardar" mnemonicParsing="false" onAction="#onGuardarReceta" prefHeight="25.0" prefWidth="78.0" styleClass="btnGuardar" text="Guardar">
+            <Button fx:id="btnGuardar" mnemonicParsing="false" onAction="#onGuardarReceta" prefHeight="41.0" prefWidth="136.0" styleClass="btnGuardar" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Guardar">
                <font>
                   <Font size="14.0" />
                </font></Button>

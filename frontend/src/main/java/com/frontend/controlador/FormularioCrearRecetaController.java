@@ -31,11 +31,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 public class FormularioCrearRecetaController {
 
     private final InicioService inicioService;
     private ValidationSupport validationSupport;
+    private InicioController inicioController = new InicioController();
 
     // constructor sin armumentos para javaFX e inicializacion de campos final
     public FormularioCrearRecetaController() {
@@ -43,13 +45,7 @@ public class FormularioCrearRecetaController {
     }
 
     @FXML
-    private ResourceBundle resources;
-
-    @FXML
     private VBox VboxFormularioRecetaContainer;
-
-    @FXML
-    private Button btnAtras;
 
     @FXML
     private Button btnGuardar;
@@ -85,6 +81,9 @@ public class FormularioCrearRecetaController {
     private Label lblPorciones;
 
     @FXML
+    private Label lblPreparacion;
+
+    @FXML
     private Label lblTiempoCoccion;
 
     @FXML
@@ -94,7 +93,7 @@ public class FormularioCrearRecetaController {
     private TextArea textAreaIngredientes;
 
     @FXML
-    private Label textAreaPreparacion;
+    private TextArea textAreaPreparacion;
 
     @FXML
     private TextField textFielNombre;
@@ -106,6 +105,14 @@ public class FormularioCrearRecetaController {
     private TextField textFieldPorciones;
 
     private File imagenSeleccionada;
+
+    // esta funcion callback se ejecuta cuando la receta se crea con exito
+    // viene de InicioController
+    private Runnable onRecetaCreada;
+
+    public void setOnRecetaCreada(Runnable callback) {
+        this.onRecetaCreada = callback;
+    }
 
     @FXML
     private void initialize() {
@@ -136,6 +143,7 @@ public class FormularioCrearRecetaController {
 
     @FXML
     void onGuardarReceta(ActionEvent event) {
+
         if (validationSupport.isInvalid()) {
             // Mostrar mensaje de alerta con los errores
             StringBuilder errores = new StringBuilder();
@@ -355,6 +363,12 @@ public class FormularioCrearRecetaController {
         okButton.setOnAction(e -> {
             alert.setResult(ButtonType.OK);
             alert.close();
+            // Ejecuta el callback y vuelve a renderizar la vista de inicio
+            if (onRecetaCreada != null) {
+                onRecetaCreada.run();
+            }
+            // Cierra la ventana del formulario
+            ((Stage) btnGuardar.getScene().getWindow()).close();
         });
 
         contenido.getChildren().addAll(iconoLabel, mensajeLabel, okButton);
