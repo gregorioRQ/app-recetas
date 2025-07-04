@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="VboxFormularioRecetaContainer" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="725.0" prefWidth="640.0" styleClass="VboxContainer" stylesheets="@../estilos/formularioCrearRecetaStyles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.frontend.controlador.FormularioCrearRecetaController">
+   <children>
+      <Label alignment="CENTER" contentDisplay="TOP" maxWidth="1.7976931348623157E308" prefHeight="114.0" prefWidth="708.0" styleClass="lblCabecera" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Cree su receta!">
+         <font>
+            <Font size="25.0" />
+         </font>
+      </Label>
+      <GridPane fx:id="gridPaneContainer" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="489.0" prefWidth="605.0" styleClass="gridPaneContainer" stylesheets="@../estilos/formularioCrearRecetaStyles.css" vgap="10.0" VBox.vgrow="SOMETIMES">
+         <columnConstraints>
+            <ColumnConstraints maxWidth="1.7976931348623157E308" minWidth="10.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="403.0" minWidth="10.0" prefWidth="374.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints maxHeight="276.0" minHeight="10.0" prefHeight="50.0" valignment="CENTER" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="470.0" minHeight="10.0" prefHeight="50.0" />
+            <RowConstraints maxHeight="470.0" minHeight="10.0" prefHeight="50.0" />
+            <RowConstraints maxHeight="470.0" minHeight="10.0" prefHeight="50.0" />
+            <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="521.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="521.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="521.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="521.0" minHeight="10.0" prefHeight="50.0" valignment="CENTER" />
+         </rowConstraints>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+         <children>
+            <Label fx:id="lblNombre" prefHeight="40.0" prefWidth="371.0" styleClass="lblNombreReceta" stylesheets="@../estilos/styles.css" text="Nombre">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblPreparacion" layoutX="20.0" layoutY="23.0" prefHeight="40.0" prefWidth="371.0" styleClass="lblPreparacion" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Preparacion" GridPane.rowIndex="4">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblIngredientes" layoutX="20.0" layoutY="71.0" prefHeight="40.0" prefWidth="371.0" styleClass="lblIngredientes" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Ingredientes" GridPane.rowIndex="1">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblTiempoPreparacion" styleClass="lbltimpoPreparacion" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Tiempo preparación" GridPane.rowIndex="8">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <Label fx:id="lblTiempoCoccion" styleClass="lblTiempoCoccion" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Tiempo cocción" GridPane.rowIndex="9">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <Label fx:id="lblPorciones" styleClass="lblPorciones" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Porciones" GridPane.rowIndex="10">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <Label fx:id="lblImagenPlatillo" styleClass="lblImagenPlatillo" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Imagen del platillo" GridPane.rowIndex="11">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
+            <TextField fx:id="textFielNombre" layoutX="391.0" layoutY="70.0" prefHeight="40.0" prefWidth="375.0" promptText="escribe aquí" styleClass="textFieldNombre" stylesheets="@../estilos/formularioCrearRecetaStyles.css" GridPane.columnIndex="1" />
+            <TextField fx:id="textFieldPorciones" prefHeight="40.0" promptText="escribe aquí" styleClass="textFieldPorciones" stylesheets="@../estilos/formularioCrearRecetaStyles.css" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+            <Label fx:id="lblNombre" layoutX="20.0" layoutY="66.0" prefHeight="40.0" prefWidth="371.0" styleClass="lblNombre" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Nombre" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <TextArea fx:id="textAreaPreparacion" prefHeight="200.0" prefWidth="200.0" promptText="escribe aqui" styleClass="textAreaPreparacion" stylesheets="@../estilos/formularioCrearRecetaStyles.css" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="4" GridPane.rowSpan="4" />
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="37.0" text="Horas">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="comboBoxHorasPreparacion" prefHeight="25.0" prefWidth="42.0" promptText="Horas" styleClass="comboBoxHorasPreparacion" stylesheets="@../estilos/formularioCrearRecetaStyles.css" />
+                  <Label text="Minutos">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="comboBoxMinutosPreparacion" prefHeight="25.0" prefWidth="38.0" promptText="Minutos" styleClass="comboBoxMinutosPreparacion" stylesheets="@../estilos/formularioCrearRecetaStyles.css" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" GridPane.columnIndex="1" GridPane.rowIndex="9">
+               <children>
+                  <Label text="Horas">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="comboBoxHorasCoccion" prefHeight="25.0" prefWidth="45.0" promptText="Horas" styleClass="comboBoxHorasCoccion" stylesheets="@../estilos/formularioCrearRecetaStyles.css" />
+                  <Label text="Minutos">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="comboBoxMinutosCoccion" prefHeight="25.0" prefWidth="34.0" promptText="Minutos" styleClass="comboBoxMinutosCoccion" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="11">
+               <children>
+                  <TextField fx:id="textFieldImgSelec" prefHeight="33.0" prefWidth="226.0" promptText="seleccionar imagen" styleClass="textFieldImgSelec" stylesheets="@../estilos/formularioCrearRecetaStyles.css" />
+                  <Button fx:id="btnSelecImg" mnemonicParsing="false" onAction="#onSeleccionarImagen" prefHeight="40.0" prefWidth="72.0" styleClass="btnSelecImg" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Elegir" />
+               </children>
+            </HBox>
+            <TextArea fx:id="textAreaIngredientes" prefHeight="200.0" prefWidth="200.0" promptText="escribe aquí" styleClass="textAreaIngredientes" stylesheets="@../estilos/formularioCrearRecetaStyles.css" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="3" />
+         </children>
+         <VBox.margin>
+            <Insets bottom="20.0" />
+         </VBox.margin>
+      </GridPane>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
+         <children>
+            <Button fx:id="btnGuardar" mnemonicParsing="false" onAction="#onGuardarReceta" prefHeight="41.0" prefWidth="136.0" styleClass="btnGuardar" stylesheets="@../estilos/formularioCrearRecetaStyles.css" text="Guardar">
+               <font>
+                  <Font size="14.0" />
+               </font></Button>
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</VBox>

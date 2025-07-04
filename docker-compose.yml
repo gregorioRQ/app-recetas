@@ -1,0 +1,74 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - C:/Users/rafae/Desktop/app-recetas/.env:/app/.env
+      - ${APP_UPLOAD_DIR}/recetas-imagenes/:/app/recetas-imagenes/
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      APP_UPLOAD_DIR: ${APP_UPLOAD_DIR}
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_DATA_REDIS_HOST: ${SPRING_DATA_REDIS_HOST}
+      SPRING_DATA_REDIS_PORT: ${SPRING_DATA_REDIS_PORT}
+
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy # Espera hasta que el healthcheck de db sea exitoso
+    restart: on-failure # Reinicia si falla
+
+  db:
+    image: mysql:8.0
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      # Referencia las variables del .env
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${SPRING_DATASOURCE_DATABASE}
+      MYSQL_USER: ${SPRING_DATASOURCE_USERNAME}
+      MYSQL_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    healthcheck:
+      # Ajusta el usuario y password para el healthcheck según tu Opción 1 o 2
+      # Opción 1 (usuario regular):
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u$$MYSQL_USER",
+          "-p$$MYSQL_PASSWORD",
+        ]
+      # Opción 2 (usuario root):
+      # test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+
+  redis:
+    image: redis:7
+    container_name: my-redis
+    ports:
+      - "6379:6379" # Mapea el puerto de Redis
+    volumes:
+      - redis_data:/data
+    
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+volumes:
+  db_data: {}
+  redis_data:

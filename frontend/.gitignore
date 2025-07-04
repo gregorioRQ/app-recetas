@@ -1,0 +1,7 @@
+target/
+#variables de entorno
+.env
+
+#scripts de ejecucion
+*.bat
+run.bat

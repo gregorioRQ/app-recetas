@@ -1,0 +1,49 @@
+
+/* estilos para el inicio y el contenedor de tarjetas */
+.vboxInicioContainer{
+  -fx-background-color: rgb(161, 237, 235);
+}
+
+.saludoLabel{
+  -fx-text-fill: #0d345b;
+  -fx-font-size: 34px;
+ 
+}
+
+.btnCerrarSesion{
+  -fx-background-color: #e0e0e0;
+  -fx-background-radius: 10;
+  -fx-border-radius: 10;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0.2, 0, 2);
+  -fx-cursor: hand;
+  -fx-transition: all 0.2s ease;
+}
+
+.btnCerrarSesion:hover {
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0.3, 0, 4);
+  -fx-background-color: #4390bc;
+  -fx-text-fill: rgb(199, 228, 227);
+}
+
+.btnCrearReceta{
+  -fx-background-color: #aad19e;
+  -fx-background-radius: 10;
+  -fx-border-radius: 10;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0.2, 0, 2);
+  -fx-cursor: hand;
+  -fx-transition: all 0.2s ease
+}
+
+.btnCrearReceta:hover {
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0.3, 0, 4);
+  -fx-background-color: #39773f;
+  -fx-text-fill: rgb(199, 228, 227)
+}
+
+.flowPaneContainer{
+  -fx-background-color:#2a4056;
+  -fx-background-radius: 8;
+  -fx-border-radius: 8;
+
+}
+

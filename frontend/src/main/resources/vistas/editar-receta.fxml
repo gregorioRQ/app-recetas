@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+
+<VBox spacing="10" alignment="CENTER" prefWidth="600" prefHeight="400"
+      xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.frontend.controlador.EditarRecetaController">
+    
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Editar Receta" style="-fx-font-size: 24px;"/>
+    
+    <TextField fx:id="nombreField" promptText="Nombre de la receta"/>
+    <TextArea fx:id="ingredientesArea" promptText="Ingredientes" wrapText="true"/>
+    <TextArea fx:id="instruccionesArea" promptText="Instrucciones" wrapText="true"/>
+    
+    <HBox spacing="10">
+        <Label text="Tiempo de preparación:"/>
+        <ComboBox fx:id="horasPreparacionComboBox" promptText="Horas"/>
+        <ComboBox fx:id="minutosPreparacionComboBox" promptText="Minutos"/>
+    </HBox>
+    
+    <HBox spacing="10">
+        <Label text="Tiempo de cocción:"/>
+        <ComboBox fx:id="horasCoccionComboBox" promptText="Horas"/>
+        <ComboBox fx:id="minutosCoccionComboBox" promptText="Minutos"/>
+    </HBox>
+    
+    <TextField fx:id="porcionesField" promptText="Porciones"/>
+
+    <HBox spacing="10" alignment="CENTER">
+        <ImageView fx:id="imagenPreview" fitWidth="200" fitHeight="150" preserveRatio="true"/>
+        <Button text="Cambiar imagen" onAction="#seleccionarImagen"/>
+    </HBox>
+    
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Confirmar" onAction="#confirmarEdicion"/>
+        <Button text="Cancelar" onAction="#cancelarEdicion"/>
+    </HBox>
+</VBox>

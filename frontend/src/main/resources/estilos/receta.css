@@ -1,0 +1,110 @@
+.vboxContainer{
+    -fx-background-color: rgb(161, 237, 235);
+}
+
+.lblNombreReceta{
+    -fx-text-fill: #0d345b;
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 2px
+}
+
+.imgView{
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 16, 0.2, 0, 6);
+}
+
+.lblTiempoCoccion{
+    -fx-text-fill: #0d345b;
+    -fx-font-size: 20;
+    -fx-background-color:  #aad19e;
+    -fx-background-radius: 6px;
+    -fx-padding: 4px;
+
+}
+.lblTiempoPreparacion{
+    -fx-text-fill: #0d345b;
+    -fx-font-size: 20;
+    -fx-background-color:  #aad19e;
+    -fx-background-radius: 6px;
+    -fx-padding: 4px;
+}
+.scrollPaneIngredientes{
+    -fx-background-radius: 16px;
+    -fx-border-radius: 10px;
+    -fx-border-color: #0d345b;
+    -fx-border-width: 2px;
+    -fx-padding: 4px;
+    -fx-effect: innershadow(gaussian, rgba(63, 61, 61, 0.35), 22, 0.4, 0, 4);
+    -fx-background-color:  #aad19e;
+}
+
+.scrollPaneIngredientes .viewport{
+    -fx-background-color:  #aad19e;
+}
+
+
+
+.textFlowIngredientes{
+    -fx-font-size: 16px;
+    -fx-padding: 6px;   
+}
+
+.textFlowPreparacion{
+    -fx-font-size: 16px;
+    -fx-padding: 6px;
+    
+}
+
+.scrollPanePreparacion{
+    -fx-background-radius: 16px;
+    -fx-border-radius: 10px;
+    -fx-border-color: #0d345b;
+    -fx-border-width: 2px;
+    -fx-padding: 4px;
+    -fx-effect: innershadow(gaussian, rgba(63, 61, 61, 0.35), 22, 0.4, 0, 4);
+    -fx-background-color:  #aad19e;
+}
+
+.scrollPanePreparacion .viewport{
+    -fx-background-color:  #aad19e; 
+}
+
+.btnModificar{
+    -fx-background-color: #529a5c;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 14, 0.3, 0, 4);
+    -fx-cursor: hand;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+    -fx-transition: background-color 0.2s;
+    -fx-font-size: 20px;
+    -fx-padding: 8px;
+}
+
+.btnModificar:pressed{
+    -fx-background-color: #325926;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 6, 0.2, 0, 2);
+}
+
+.btnEliminar{
+    -fx-background-color: #a83939;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 14, 0.3, 0, 4);
+    -fx-cursor: hand;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+    -fx-transition: background-color 0.2s;
+    -fx-font-size: 20px;
+    -fx-padding: 8px;
+}
+
+.btnEliminar:pressed{
+    -fx-background-color: #5d1f1f;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 6, 0.2, 0, 2);
+}

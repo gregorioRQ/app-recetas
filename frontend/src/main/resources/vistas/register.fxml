@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="737.0" prefWidth="662.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.frontend.controlador.RegisterController">
+    <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="737.0" prefWidth="662.0" spacing="10" styleClass="vboxContainer" stylesheets="@../estilos/register.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <padding>
+            <Insets bottom="20" left="20" right="20" top="20" />
+        </padding>
+        <children>
+         <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Registrese">
+            <font>
+               <Font size="40.0" />
+            </font>
+            <padding>
+               <Insets bottom="20.0" />
+            </padding>
+         </Label>
+            <Label maxWidth="1.7976931348623157E308" text="Nombre:">
+            <font>
+               <Font size="16.0" />
+            </font></Label>
+            <TextField fx:id="nombreField" promptText="escribe aquí" styleClass="txtFieldNombre" stylesheets="@../estilos/register.css">
+            <font>
+               <Font size="14.0" />
+            </font></TextField>
+            
+            <Label maxWidth="1.7976931348623157E308" text="Apellido:">
+            <font>
+               <Font size="16.0" />
+            </font></Label>
+            <TextField fx:id="apellidoField" promptText="escribe aquí" styleClass="txtFieldApellido" stylesheets="@../estilos/register.css">
+            <font>
+               <Font size="14.0" />
+            </font></TextField>
+            
+            <Label maxWidth="1.7976931348623157E308" text="Correo electronico:">
+            <font>
+               <Font size="16.0" />
+            </font></Label>
+            <TextField fx:id="correoField" promptText="escribe aquí" styleClass="txtFieldCorreo" stylesheets="@../estilos/register.css">
+            <font>
+               <Font size="14.0" />
+            </font></TextField>
+            
+            <Label maxWidth="1.7976931348623157E308" text="Contraseña:">
+            <font>
+               <Font size="16.0" />
+            </font></Label>
+            <PasswordField fx:id="passwordField" promptText="escribe aquí" styleClass="passFieldPass" stylesheets="@../estilos/register.css">
+            <font>
+               <Font size="14.0" />
+            </font></PasswordField>
+            
+            <Label maxWidth="1.7976931348623157E308" text="Fecha de Nacimiento:">
+            <font>
+               <Font size="16.0" />
+            </font></Label>
+            <DatePicker fx:id="fechaNacimientoField" maxWidth="1.7976931348623157E308" prefHeight="30.0" prefWidth="653.0" promptText="escribe aquí, ej: 2000-03-05 o haz clic en el icono del calendario ---&gt;" styleClass="datePIckerFechaNac" stylesheets="@../estilos/register.css">
+            <VBox.margin>
+               <Insets bottom="40.0" />
+            </VBox.margin></DatePicker>
+            
+            <Button fx:id="registerButton" mnemonicParsing="false" onAction="#handleRegisterButtonClick" prefHeight="37.0" prefWidth="137.0" styleClass="btnRegistrarse" stylesheets="@../estilos/register.css" text="Registrarse">
+            <font>
+               <Font size="14.0" />
+            </font></Button>
+            <Button fx:id="volverLoginButton" onAction="#handleVolverLoginButtonClick" prefHeight="37.0" prefWidth="137.0" styleClass="btnVolverLogin" stylesheets="@../estilos/register.css" text="Volver al Login">
+            <font>
+               <Font size="14.0" />
+            </font></Button>
+        </children>
+    </VBox>
+</AnchorPane>

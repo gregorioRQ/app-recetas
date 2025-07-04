@@ -1,0 +1,5 @@
+````batch
+// filepath: c:\Users\rafae\Desktop\app-recetas\frontend\run.bat.example
+@echo off
+set BACKEND_BASE_URL=http://localhost:8080
+mvn clean javafx:run

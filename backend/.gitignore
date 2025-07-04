@@ -1,0 +1,48 @@
+# Archivos de ayuda o documentación específicos del proyecto
+HELP.md
+
+# Directorios de compilación de Maven
+# Ignora el directorio 'target' que contiene los artefactos de compilación
+target/
+
+# Directorios de compilación de Gradle (si usaras Gradle)
+build/
+
+# Archivos del Maven Wrapper (NO ignorarlos, son útiles para otros desarrolladores)
+# No necesitas líneas explícitas si ya están incluidas por defecto o gestionadas por el wrapper.
+# Si tienes un .mvn/wrapper/maven-wrapper.jar, no lo ignores.
+
+# Ignorar archivos específicos de IDEs
+
+# STS (Spring Tool Suite / Eclipse)
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+
+# Archivos de log
+*.log
+logs/ 
+# Si tu aplicación genera un directorio de logs
+
+# Archivos de entorno y secretos
+.env
